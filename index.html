@@ -75,6 +75,29 @@
     background: #ffe58a;
     padding: 0;
   }
+  .channel-box {
+    background: #fff8e1;
+    border: 1px solid #e8d68a;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    font-size: 0.9rem;
+  }
+  .channel-box .title {
+    font-weight: 700;
+    color: #7a5a00;
+    margin-bottom: 4px;
+  }
+  .channel-box .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+  }
+  .channel-box .note {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    color: #8a7a3a;
+  }
 </style>
 </head>
 <body>
@@ -83,6 +106,12 @@
   <div class="search-box">
     <input id="q" type="text" placeholder="Ürün adı veya kod yazın (örn: domates, 2900104)" autofocus>
     <div class="count" id="count"></div>
+  </div>
+  <div class="channel-box">
+    <div class="title">📦 Sipariş Kanalı Kodları</div>
+    <div class="row"><span>Trendyol</span><span class="code">99998</span></div>
+    <div class="row"><span>Getir</span><span class="code">99994</span></div>
+    <div class="note">Not: Önce müşteri girilir, sonra kod enter'lanır.</div>
   </div>
   <div id="results"></div>
 </div>
@@ -125,6 +154,11 @@ const data = [
   {c:"2930341", n:"MNV.TAZE SOGAN KG", g:"Sebze"},
   {c:"2900108", n:"MNV.TURP KIRMIZI KG", g:"Sebze"},
   {c:"2900295", n:"MNV.ZENCEFIL KG", g:"Sebze"},
+  {c:"2900357", n:"MNV.SILI BIBER KG", g:"Sebze"},
+  {c:"2900088", n:"MNV.PANCAR KG", g:"Sebze"},
+  {c:"2900544", n:"MNV.MANTI KG", g:"Sebze"},
+  {c:"2900051", n:"MNV.FASULYE SEKER KG", g:"Sebze"},
+  {c:"2900042", n:"MNV.KURU SARIMSAK KG", g:"Sebze"},
   {c:"2900263", n:"MN.ELMA GOLDEN NO:2 KG", g:"Egzotik Meyveler"},
   {c:"2820232", n:"MNV.ANANAS ADET", g:"Egzotik Meyveler"},
   {c:"2904052", n:"MNV.ARMUT DEVECI KG", g:"Egzotik Meyveler"},
@@ -164,7 +198,36 @@ const data = [
   {c:"2900630", n:"MNV.PEPINO KG", g:"Egzotik Meyveler"},
   {c:"2900119", n:"MNV.PORTAKAL KG", g:"Egzotik Meyveler"},
   {c:"2900991", n:"MNV.SEFTALI LUX KG", g:"Egzotik Meyveler"},
-  {c:"2908791", n:"MNV.TAZE CEVIZ KG", g:"Egzotik Meyveler"}
+  {c:"2908791", n:"MNV.TAZE CEVIZ KG", g:"Egzotik Meyveler"},
+  {c:"2904189", n:"MNV.INCIR KG", g:"Egzotik Meyveler"},
+  {c:"2904013", n:"MNV.ARMUT BAHRIBEY KG", g:"Egzotik Meyveler"},
+  {c:"2900118", n:"MNV.SEFTALI JAPON KG", g:"Egzotik Meyveler"},
+  {c:"2909141", n:"MNV.UZUM BEYAZ KG", g:"Egzotik Meyveler"},
+  {c:"2900176", n:"MNV.UZUM SIYAH KG", g:"Egzotik Meyveler"},
+  {c:"2904068", n:"MNV.ERIK ALYANAK KG", g:"Egzotik Meyveler"},
+  {c:"2900141", n:"MNV.ANJELIKA ERIK KG", g:"Egzotik Meyveler"},
+  {c:"2900074", n:"MNV.UZUM CEKIRDEKSIZ KG", g:"Egzotik Meyveler"},
+  {c:"2904142", n:"SEN PILIC BUTUN TAVUK KG", g:"Kasap - Şen Piliç"},
+  {c:"2904116", n:"SEN PILIC BAGET KG", g:"Kasap - Şen Piliç"},
+  {c:"2904138", n:"SEN PILIC BONFILE KG", g:"Kasap - Şen Piliç"},
+  {c:"2904114", n:"SEN PILIC KALCALI BUT KG", g:"Kasap - Şen Piliç"},
+  {c:"2904119", n:"SEN PILIC PIRZOLA KG", g:"Kasap - Şen Piliç"},
+  {c:"2904124", n:"SEN PILIC 12'LI TAVA (BUT HARIC) KG", g:"Kasap - Şen Piliç"},
+  {c:"2904121", n:"SEN PILIC 12'LI KANAT KG", g:"Kasap - Şen Piliç"},
+  {c:"2904124", n:"SEN PILIC 12'LI TAVA KG", g:"Kasap - Şen Piliç"},
+  {c:"2900209", n:"BANVIT BUTUN TAVUK KG", g:"Kasap - Banvit"},
+  {c:"2900719", n:"BANVIT BAGET KG", g:"Kasap - Banvit"},
+  {c:"2900909", n:"BANVIT BONFILE KG", g:"Kasap - Banvit"},
+  {c:"2930046", n:"BANVIT PIRZOLA KG", g:"Kasap - Banvit"},
+  {c:"2900373", n:"BANVIT 12'LI KANAT KG", g:"Kasap - Banvit"},
+  {c:"2900656", n:"BANVIT 12'LI TAVA KG", g:"Kasap - Banvit"},
+  {c:"2900426", n:"BANVIT KALCALI BUT KG", g:"Kasap - Banvit"}
+];
+
+// Sipariş kanalı kodları - ürün değil, arama listesine dahil değil
+const orderChannels = [
+  {kanal:"Trendyol", kod:"99998"},
+  {kanal:"Getir", kod:"99994"}
 ];
 
 function normalize(s){
