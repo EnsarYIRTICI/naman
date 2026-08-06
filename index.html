@@ -25,6 +25,18 @@
         margin: 8px 0 14px;
         color: #2d4a2b;
       }
+      .version-badge {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #4a7a45;
+        background: #e6efe4;
+        border: 1px solid #c9dcc6;
+        border-radius: 999px;
+        padding: 2px 8px;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
       .search-box {
         position: sticky;
         top: 0;
@@ -113,11 +125,19 @@
         font-size: 0.78rem;
         color: #8a7a3a;
       }
+      footer {
+        text-align: center;
+        font-size: 0.75rem;
+        color: #999;
+        padding: 24px 0 12px;
+      }
     </style>
   </head>
   <body>
     <div class="wrap">
-      <h1>🥬 Meyve Sebze Stok Kodu Arama</h1>
+      <h1>
+        🥬 Meyve Sebze Stok Kodu Arama<span class="version-badge">v1.0</span>
+      </h1>
       <div class="search-box">
         <input
           id="q"
@@ -132,12 +152,15 @@
         <div class="row">
           <span>Trendyol</span><span class="code">99998</span>
         </div>
-        <div class="row"><span>Getir</span><span class="code">99994</span></div>
+        <div class="row">
+          <span>Getir</span><span class="code">999914</span>
+        </div>
         <div class="note">
           Not: Önce müşteri girilir, sonra kod enter'lanır.
         </div>
       </div>
       <div id="results"></div>
+      <footer>Sürüm 1.0</footer>
     </div>
 
     <script>
