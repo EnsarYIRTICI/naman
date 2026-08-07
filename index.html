@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Meyve Sebze Stok Kodu Arama</title>
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/JsBarcode/3.11.5/JsBarcode.all.min.js"></script>
   </head>
   <body>
     <div class="wrap">
@@ -26,7 +27,25 @@
 
       <div class="channel-box" id="channelBox"></div>
 
-      <div id="results"></div>
+      <div class="tabs">
+        <button class="tab active" data-tab="urunler">Ürünler</button>
+        <button class="tab" data-tab="barkodlar">Barkodlar</button>
+      </div>
+
+      <div id="urunlerPanel">
+        <div id="results"></div>
+      </div>
+
+      <div id="barkodlarPanel" style="display: none"></div>
+
+      <div id="barcodeModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <div class="modal-label" id="modalLabel"></div>
+          <svg id="modalBarcode"></svg>
+          <button id="modalClose">Kapat</button>
+        </div>
+      </div>
+
       <footer>Sürüm <span id="versionFooter"></span></footer>
     </div>
 

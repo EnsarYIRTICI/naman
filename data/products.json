@@ -1,4 +1,8 @@
 {
+  "actions": [
+    { "ad": "Ürün İptal", "kod": "IPTAL01" },
+    { "ad": "Fiyat Değişikliği", "kod": "FIYAT01" }
+  ],
   "products": [
     { "c": "2900027", "n": "MNV.BARBUNYA KG", "g": "Sebze" },
     { "c": "2900100", "n": "MNV.BEZELYE KG", "g": "Sebze" },
@@ -133,6 +137,7 @@
       "n": "SEN PILIC 12'LI TAVA KG",
       "g": "Kasap - Şen Piliç"
     },
+    { "c": "2906002", "n": "BEYBILIC BAGET KG", "g": "Kasap - Beybiliç" },
     { "c": "2900209", "n": "BANVIT BUTUN TAVUK KG", "g": "Kasap - Banvit" },
     { "c": "2900719", "n": "BANVIT BAGET KG", "g": "Kasap - Banvit" },
     { "c": "2900909", "n": "BANVIT BONFILE KG", "g": "Kasap - Banvit" },
