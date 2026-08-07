@@ -1,5 +1,5 @@
 {
-  "actions": [{ "ad": "Ürün İptal", "kod": "IPTAL01" }],
+  "actions": [{ "ad": "Ürün İptal", "kod": "BEYKOZ" }],
   "channels": [
     { "kanal": "Trendyol", "kod": "99998" },
     { "kanal": "Getir", "kod": "999914" }
