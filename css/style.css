@@ -177,6 +177,8 @@ mark {
   margin-bottom: 12px;
 }
 #modalBarcode {
+  display: block;
+  margin: 0 auto;
   max-width: 100%;
 }
 #modalClose {
