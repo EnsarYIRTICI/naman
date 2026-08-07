@@ -9,15 +9,15 @@ ya da altyapı zaten kuruluysa sadece son değişiklikleri çekip yayına alır.
 - Bir Cloudflare API token'ı (DNS-01 doğrulaması için — bkz. aşağıdaki "Cloudflare Token" bölümü)
 - `${BASE_DOMAIN}` (script içinde `xenny.cloud`) domaininin Cloudflare üzerinde yönetiliyor olması
 
-> **Not:** Repodaki branch adını (`main`/`master`) ve gerçek raw URL'ini kendi reponuza göre
-> doğrulayın; aşağıdaki komutlarda `main` varsayıldı.
+> **Not:** Aşağıdaki komutlarda branch `master` varsayıldı; reponuzun gerçek branch
+> adı farklıysa (ör. `main`) URL'i buna göre güncelleyin.
 
 ## Hızlı Kurulum
 
 Scripti indirip inceledikten sonra çalıştırmak (önerilen):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/EnsarYIRTICI/naman/main/install-naman.sh -o install-naman.sh
+curl -fsSL https://raw.githubusercontent.com/EnsarYIRTICI/naman/master/install-naman.sh -o install-naman.sh
 chmod +x install-naman.sh
 sudo ./install-naman.sh
 ```
@@ -26,7 +26,7 @@ Doğrudan pipe ile çalıştırmak (önce içeriğini gözden geçirmeden root o
 çalıştırmak risklidir, yalnızca scripti ve kaynağı güvendiğiniz durumlarda kullanın):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/EnsarYIRTICI/naman/main/install-naman.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/EnsarYIRTICI/naman/master/install-naman.sh | sudo bash
 ```
 
 ## Cloudflare Token
