@@ -1,3 +1,7 @@
+// js/app.js
+
+const APP_VERSION = "2.0";
+
 let data = [];
 let orderChannels = [];
 
@@ -77,6 +81,9 @@ function render() {
 async function init() {
   const input = document.getElementById("q");
   const count = document.getElementById("count");
+
+  document.getElementById("versionBadge").textContent = `v${APP_VERSION}`;
+  document.getElementById("versionFooter").textContent = APP_VERSION;
 
   try {
     const res = await fetch("data/products.json");
