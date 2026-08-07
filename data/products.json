@@ -1,7 +1,8 @@
 {
-  "actions": [
-    { "ad": "Ürün İptal", "kod": "IPTAL01" },
-    { "ad": "Fiyat Değişikliği", "kod": "FIYAT01" }
+  "actions": [{ "ad": "Ürün İptal", "kod": "IPTAL01" }],
+  "channels": [
+    { "kanal": "Trendyol", "kod": "99998" },
+    { "kanal": "Getir", "kod": "999914" }
   ],
   "products": [
     { "c": "2900027", "n": "MNV.BARBUNYA KG", "g": "Sebze" },
@@ -178,9 +179,5 @@
     { "c": "2900709", "n": "CIHANSER ANADOLU ESKI KASAR KG", "g": "Şarküteri" },
     { "c": "2930336", "n": "GURSUT KOY PEYNIRI KG", "g": "Şarküteri" },
     { "c": "2901400", "n": "GURSUT IZMIR TULUM KG", "g": "Şarküteri" }
-  ],
-  "channels": [
-    { "kanal": "Trendyol", "kod": "99998" },
-    { "kanal": "Getir", "kod": "999914" }
   ]
 }
