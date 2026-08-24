@@ -1,5 +1,11 @@
 {
-  "actions": [{ "ad": "Ürün İptal", "kod": "BEYKOZ" }],
+  "actions": [
+    { "ad": "Ürün İptal", "kod": "BEYKOZ" },
+    {
+      "ad": "Lipton Ice Tea Limon",
+      "kod": "8690574114443"
+    }
+  ],
   "channels": [
     { "kanal": "Trendyol", "kod": "99998" },
     { "kanal": "Getir", "kod": "999914" }
@@ -88,6 +94,7 @@
     { "c": "2900927", "n": "MNV.KAYISI KG", "g": "Egzotik Meyveler" },
     { "c": "2900687", "n": "MNV.KAYISI MALATYA KG", "g": "Egzotik Meyveler" },
     { "c": "2900112", "n": "MNV.KAYISI SEKERPARE KG", "g": "Egzotik Meyveler" },
+    { "c": "2900079", "n": "MNV.KAYISI IGDIR KG", "g": "Egzotik Meyveler" },
     { "c": "2930298", "n": "MNV.KIRAZ KG", "g": "Egzotik Meyveler" },
     { "c": "2900220", "n": "MNV.KIRAZ LUX KG", "g": "Egzotik Meyveler" },
     { "c": "2900057", "n": "MNV.KIVI KG", "g": "Egzotik Meyveler" },
@@ -111,6 +118,7 @@
     { "c": "2900141", "n": "MNV.ANJELIKA ERIK KG", "g": "Egzotik Meyveler" },
     { "c": "2906135", "n": "MNV.MURDUM ERIK KG", "g": "Egzotik Meyveler" },
     { "c": "2900074", "n": "MNV.UZUM CEKIRDEKSIZ KG", "g": "Egzotik Meyveler" },
+    { "c": "2904181", "n": "MNV.UZUM REZAKI KG", "g": "Egzotik Meyveler" },
     {
       "c": "2904142",
       "n": "SEN PILIC BUTUN TAVUK KG",
@@ -140,6 +148,7 @@
       "g": "Kasap - Şen Piliç"
     },
     { "c": "2906002", "n": "BEYBILIC BAGET KG", "g": "Kasap - Beybiliç" },
+    { "c": "2906001", "n": "BEYBILIC KALCALI BUT KG", "g": "Kasap - Beybiliç" },
     { "c": "2900209", "n": "BANVIT BUTUN TAVUK KG", "g": "Kasap - Banvit" },
     { "c": "2900719", "n": "BANVIT BAGET KG", "g": "Kasap - Banvit" },
     { "c": "2900909", "n": "BANVIT BONFILE KG", "g": "Kasap - Banvit" },
@@ -177,8 +186,17 @@
     { "c": "2909990", "n": "BESLER KAVURMA KG", "g": "Şarküteri" },
     { "c": "2900894", "n": "BESLER GOLD DANA SUCUK KG", "g": "Şarküteri" },
     { "c": "2930672", "n": "CANTURK FERMENTE SUCUK KG", "g": "Şarküteri" },
-    { "c": "2900709", "n": "CIHANSER ANADOLU (CALIDERE) ESKI KASAR KG", "g": "Şarküteri" },
+    {
+      "c": "2900709",
+      "n": "CIHANSER ANADOLU (CALIDERE) ESKI KASAR KG",
+      "g": "Şarküteri"
+    },
     { "c": "2930336", "n": "GURSUT KOY PEYNIRI KG", "g": "Şarküteri" },
-    { "c": "2901400", "n": "GURSUT IZMIR TULUM KG", "g": "Şarküteri" }
+    { "c": "2901400", "n": "GURSUT IZMIR TULUM KG", "g": "Şarküteri" },
+    {
+      "c": "2990350",
+      "n": "CEMALIM TAM YAGLI KLASIK PEYNIR KG",
+      "g": "Şarküteri"
+    }
   ]
 }
