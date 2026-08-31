@@ -22,6 +22,7 @@
     { "c": "2900768", "n": "MNV.BIBER KOY KG", "g": "Sebze" },
     { "c": "2900059", "n": "MNV.BIBER SIVRI KG", "g": "Sebze" },
     { "c": "2900144", "n": "MNV.BIBER SIVRI KIL KG", "g": "Sebze" },
+    { "c": "2930089", "n": "JELIBON BIBER", "g": "Sebze" },
     { "c": "2900104", "n": "MNV.DOMATES KG", "g": "Sebze" },
     { "c": "2900154", "n": "MNV.DOMATES KOKTEYL KG", "g": "Sebze" },
     { "c": "2905083", "n": "MNV.DOMATES PEMBE KG", "g": "Sebze" },
@@ -61,6 +62,7 @@
     { "c": "2901118", "n": "MNV.CILEK EKO KG", "g": "Egzotik Meyveler" },
     { "c": "2900026", "n": "MNV.CILEK KG", "g": "Egzotik Meyveler" },
     { "c": "2900030", "n": "MNV.ELMA GOLDEN LUX KG", "g": "Egzotik Meyveler" },
+    { "c": "2900085", "n": "MNV.ELMA GALA KG", "g": "Egzotik Meyveler" },
     {
       "c": "2900114",
       "n": "MNV.ELMA GRANNY SMITH KG",
@@ -110,6 +112,7 @@
     { "c": "2900991", "n": "MNV.SEFTALI LUX KG", "g": "Egzotik Meyveler" },
     { "c": "2908791", "n": "MNV.TAZE CEVIZ KG", "g": "Egzotik Meyveler" },
     { "c": "2904189", "n": "MNV.INCIR BEYAZ KG", "g": "Egzotik Meyveler" },
+    { "c": "2900188", "n": "MNV.INCIR SIYAH KG", "g": "Egzotik Meyveler" },
     { "c": "2904013", "n": "MNV.ARMUT BAHRIBEY KG", "g": "Egzotik Meyveler" },
     { "c": "2900118", "n": "MNV.SEFTALI JAPON KG", "g": "Egzotik Meyveler" },
     { "c": "2909141", "n": "MNV.UZUM BEYAZ KG", "g": "Egzotik Meyveler" },
