@@ -53,6 +53,8 @@
     { "c": "2900544", "n": "MNV.MANTI KG", "g": "Sebze" },
     { "c": "2900051", "n": "MNV.FASULYE SEKER KG", "g": "Sebze" },
     { "c": "2900042", "n": "MNV.KURU SARIMSAK KG", "g": "Sebze" },
+    { "c": "2909185", "n": "MNV.SALATALIK KORNISON KG", "g": "Sebze" },
+    { "c": "2900213", "n": "MNV.ACUR KG", "g": "Sebze" },
     { "c": "2900263", "n": "MN.ELMA GOLDEN NO:2 KG", "g": "Egzotik Meyveler" },
     { "c": "2820232", "n": "MNV.ANANAS ADET", "g": "Egzotik Meyveler" },
     { "c": "2904052", "n": "MNV.ARMUT DEVECI KG", "g": "Egzotik Meyveler" },
@@ -122,6 +124,7 @@
     { "c": "2906135", "n": "MNV.MURDUM ERIK KG", "g": "Egzotik Meyveler" },
     { "c": "2900074", "n": "MNV.UZUM CEKIRDEKSIZ KG", "g": "Egzotik Meyveler" },
     { "c": "2904181", "n": "MNV.UZUM REZAKI KG", "g": "Egzotik Meyveler" },
+    { "c": "2900718", "n": "MNV.MANDALINA KG", "g": "Egzotik Meyveler" },
     {
       "c": "2904142",
       "n": "SEN PILIC BUTUN TAVUK KG",
