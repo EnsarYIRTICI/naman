@@ -45,6 +45,7 @@
     { "c": "2904071", "n": "MNV.SOGAN ARPACIK KG", "g": "Sebze" },
     { "c": "2900009", "n": "MNV.SOGAN KIRMIZI KG", "g": "Sebze" },
     { "c": "2900047", "n": "MNV.SOGAN KURU KG", "g": "Sebze" },
+    { "c": "2900097", "n": "SOGAN GUMUS", "g": "Sebze" },
     { "c": "2930341", "n": "MNV.TAZE SOGAN KG", "g": "Sebze" },
     { "c": "2900108", "n": "MNV.TURP KIRMIZI KG", "g": "Sebze" },
     { "c": "2900295", "n": "MNV.ZENCEFIL KG", "g": "Sebze" },
@@ -162,6 +163,7 @@
     { "c": "2900373", "n": "BANVIT 12'LI KANAT KG", "g": "Kasap - Banvit" },
     { "c": "2900656", "n": "BANVIT 12'LI TAVA KG", "g": "Kasap - Banvit" },
     { "c": "2900426", "n": "BANVIT KALCALI BUT KG", "g": "Kasap - Banvit" },
+    { "c": "2930691", "n": "BUPILIC PIRZOLA KG", "g": "Kasap - Bupiliç" },
     { "c": "2930658", "n": "EKICI T.YAGLI BEYAZ PEYNIR KG", "g": "Şarküteri" },
     {
       "c": "2907100",
@@ -202,6 +204,11 @@
     {
       "c": "2990350",
       "n": "CEMALIM TAM YAGLI KLASIK PEYNIR KG",
+      "g": "Şarküteri"
+    },
+    {
+      "c": "2930673",
+      "n": "GUNDOGU ERZINCAN TULUM PEYNIRI KG",
       "g": "Şarküteri"
     }
   ]
