@@ -22,7 +22,7 @@
     { "c": "2900768", "n": "MNV.BIBER KOY KG", "g": "Sebze" },
     { "c": "2900059", "n": "MNV.BIBER SIVRI KG", "g": "Sebze" },
     { "c": "2900144", "n": "MNV.BIBER SIVRI KIL KG", "g": "Sebze" },
-    { "c": "2930089", "n": "MNV.BIBER JELIBON", "g": "Sebze" },
+    { "c": "2930089", "n": "MNV.BIBER JELIBON KG", "g": "Sebze" },
     { "c": "2900357", "n": "MNV.BIBER SILI KG", "g": "Sebze" },
     { "c": "2900104", "n": "MNV.DOMATES KG", "g": "Sebze" },
     { "c": "2900154", "n": "MNV.DOMATES KOKTEYL KG", "g": "Sebze" },
@@ -47,7 +47,7 @@
     { "c": "2904071", "n": "MNV.SOGAN ARPACIK KG", "g": "Sebze" },
     { "c": "2900009", "n": "MNV.SOGAN KIRMIZI KG", "g": "Sebze" },
     { "c": "2900047", "n": "MNV.SOGAN KURU KG", "g": "Sebze" },
-    { "c": "2900097", "n": "MNV.SOGAN GUMUS", "g": "Sebze" },
+    { "c": "2900097", "n": "MNV.SOGAN GUMUS KG", "g": "Sebze" },
     { "c": "2930341", "n": "MNV.TAZE SOGAN KG", "g": "Sebze" },
     { "c": "2900108", "n": "MNV.TURP KIRMIZI KG", "g": "Sebze" },
     { "c": "2900295", "n": "MNV.ZENCEFIL KG", "g": "Sebze" },
@@ -146,12 +146,7 @@
     },
     {
       "c": "2904121",
-      "n": "SEN PILIC 12'LI KANAT KG",
-      "g": "Kasap - Şen Piliç"
-    },
-    {
-      "c": "2904124",
-      "n": "SEN PILIC 12'LI TAVA KG",
+      "n": "SEN PILIC KANAT KG",
       "g": "Kasap - Şen Piliç"
     },
     { "c": "2906002", "n": "BEYBILIC BAGET KG", "g": "Kasap - Beybiliç" },
