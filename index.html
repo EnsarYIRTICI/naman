@@ -3,26 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Meyve Sebze Stok Kodu Arama</title>
+    <title>Stok Kodu Arama</title>
     <link rel="stylesheet" href="css/style.css" />
     <script src="js/jsbarcode.min.js"></script>
   </head>
   <body>
     <div class="wrap">
       <h1>
-        🥬 Meyve Sebze Stok Kodu Arama<span
-          class="version-badge"
-          id="versionBadge"
-        ></span>
+        🛒 Stok Kodu Arama<span class="version-badge" id="versionBadge"></span>
       </h1>
       <div class="search-box">
         <input
           id="q"
           type="text"
-          placeholder="Ürün adı veya kod yazın (örn: domates, 2900104)"
+          placeholder="Ürün adı veya kod yazın (örn: domates, tavuk, peynir, 2900104)"
           autofocus
         />
         <div class="count" id="count"></div>
+        <div class="chips" id="categoryChips"></div>
       </div>
 
       <div class="channel-box" id="channelBox"></div>

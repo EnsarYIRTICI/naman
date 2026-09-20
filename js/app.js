@@ -1,21 +1,39 @@
 // js/app.js
 
-const APP_VERSION = "2.2";
+const APP_VERSION = "2.3";
 
 let data = [];
 let orderChannels = [];
 let actions = [];
+let activeCat = "tumu";
+
+const CATEGORIES = [
+  { key: "tumu", label: "Tümü" },
+  { key: "sebze", label: "🥬 Sebze" },
+  { key: "meyve", label: "🍎 Meyve" },
+  { key: "kasap", label: "🥩 Kasap" },
+  { key: "sarkuteri", label: "🧀 Şarküteri" },
+];
 
 function normalize(s) {
   return s
     .toLocaleUpperCase("tr-TR")
     .replace(/İ/g, "I")
-    .replace(/I/g, "I")
     .replace(/Ş/g, "S")
     .replace(/Ğ/g, "G")
     .replace(/Ü/g, "U")
     .replace(/Ö/g, "O")
     .replace(/Ç/g, "C");
+}
+
+// JSON'daki "g" alanından kategori anahtarını üretir
+function getCategory(group) {
+  const g = normalize(group || "");
+  if (g.startsWith("KASAP")) return "kasap";
+  if (g.startsWith("SARKUTERI")) return "sarkuteri";
+  if (g.includes("MEYVE")) return "meyve";
+  if (g.includes("SEBZE")) return "sebze";
+  return "diger";
 }
 
 function highlight(text, q) {
@@ -46,6 +64,21 @@ function renderChannels() {
   `;
 }
 
+function renderChips() {
+  const box = document.getElementById("categoryChips");
+  box.innerHTML = CATEGORIES.map(
+    (c) =>
+      `<button class="chip${c.key === activeCat ? " active" : ""}" data-cat="${c.key}">${c.label}</button>`,
+  ).join("");
+  box.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      activeCat = chip.dataset.cat;
+      renderChips();
+      render();
+    });
+  });
+}
+
 function render() {
   const input = document.getElementById("q");
   const results = document.getElementById("results");
@@ -53,13 +86,15 @@ function render() {
 
   const raw = input.value.trim();
   const q = normalize(raw);
-  const filtered = q
-    ? data.filter((d) => normalize(d.n).includes(q) || d.c.includes(raw))
-    : data;
+  const filtered = data.filter((d) => {
+    if (activeCat !== "tumu" && getCategory(d.g) !== activeCat) return false;
+    if (!q) return true;
+    return normalize(d.n).includes(q) || d.c.includes(raw);
+  });
 
   count.textContent = q
     ? `${filtered.length} sonuç bulundu`
-    : `${data.length} ürün listeleniyor`;
+    : `${filtered.length} ürün listeleniyor`;
 
   if (filtered.length === 0) {
     results.innerHTML = '<div class="empty">Sonuç bulunamadı</div>';
@@ -69,11 +104,13 @@ function render() {
   let html = "";
   let lastGroup = null;
   filtered.forEach((d) => {
+    const cat = getCategory(d.g);
     if (d.g !== lastGroup) {
-      html += `<div class="group-title">${d.g}</div><ul>`;
+      if (lastGroup !== null) html += "</ul>";
+      html += `<div class="group-title" data-cat="${cat}">${d.g}</div><ul>`;
       lastGroup = d.g;
     }
-    html += `<li><span class="name">${highlight(d.n, q)}</span><span class="code">${highlight(d.c, raw)}</span></li>`;
+    html += `<li data-cat="${cat}"><span class="name">${highlight(d.n, q)}</span><span class="code">${highlight(d.c, raw)}</span></li>`;
   });
   html += "</ul>";
   results.innerHTML = html;
@@ -154,6 +191,7 @@ async function init() {
   }
 
   renderChannels();
+  renderChips();
   render();
   setupTabs();
   renderBarcodes();
