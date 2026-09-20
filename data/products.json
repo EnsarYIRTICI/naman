@@ -1,10 +1,7 @@
 {
   "actions": [
     { "ad": "Ürün İptal", "kod": "BEYKOZ" },
-    {
-      "ad": "Lipton Ice Tea Limon",
-      "kod": "8690574114443"
-    }
+    { "ad": "Lipton Ice Tea Limon", "kod": "8690574114443" }
   ],
   "channels": [
     { "kanal": "Trendyol", "kod": "99998" },
@@ -142,13 +139,43 @@
       "n": "SEN PILIC IZGARA TAVA (BUT INCIK) KG",
       "g": "Kasap - Şen Piliç"
     },
+    { "c": "2904121", "n": "SEN PILIC KANAT KG", "g": "Kasap - Şen Piliç" },
+    { "c": "2904126", "n": "SEN PILIC KELEBEK KG", "g": "Kasap - Şen Piliç" },
     {
-      "c": "2904121",
-      "n": "SEN PILIC KANAT KG",
+      "c": "2904120",
+      "n": "SEN PILIC KOK KANAT KG (KANAT INCIK)",
       "g": "Kasap - Şen Piliç"
     },
+    {
+      "c": "2902106",
+      "n": "SEN PILIC TABAKLI UCLU KANAT KG",
+      "g": "Kasap - Şen Piliç"
+    },
+    { "c": "2904136", "n": "SEN PILIC CIGER KG", "g": "Kasap - Şen Piliç" },
+    { "c": "2904140", "n": "SEN PILIC TASLIK KG", "g": "Kasap - Şen Piliç" },
     { "c": "2906002", "n": "BEYBILIC BAGET KG", "g": "Kasap - Beybiliç" },
     { "c": "2906001", "n": "BEYBILIC KALCALI BUT KG", "g": "Kasap - Beybiliç" },
+    { "c": "2906011", "n": "BEYBILIC BUTUN PILIC KG", "g": "Kasap - Beybiliç" },
+    {
+      "c": "2906009",
+      "n": "BEYBILIC GOGUS BONFILE KG",
+      "g": "Kasap - Beybiliç"
+    },
+    {
+      "c": "2906003",
+      "n": "BEYBILIC IZGARA KANAT KG",
+      "g": "Kasap - Beybiliç"
+    },
+    { "c": "2906012", "n": "BEYBILIC IZGARA TAVA KG", "g": "Kasap - Beybiliç" },
+    { "c": "2906004", "n": "BEYBILIC PIRZOLA KG", "g": "Kasap - Beybiliç" },
+    { "c": "2900416", "n": "BEYBILIC TASLIK KG", "g": "Kasap - Beybiliç" },
+    { "c": "2900543", "n": "BEYBILIC CIGER KG", "g": "Kasap - Beybiliç" },
+    { "c": "2906013", "n": "BEYBILIC UCLU KANAT KG", "g": "Kasap - Beybiliç" },
+    {
+      "c": "2906010",
+      "n": "BEYBILIC PILIC UCSUZ KANAT TBK (SP) KG",
+      "g": "Kasap - Beybiliç"
+    },
     { "c": "2900209", "n": "BANVIT BUTUN TAVUK KG", "g": "Kasap - Banvit" },
     { "c": "2900719", "n": "BANVIT BAGET KG", "g": "Kasap - Banvit" },
     { "c": "2900909", "n": "BANVIT BONFILE KG", "g": "Kasap - Banvit" },
@@ -156,7 +183,30 @@
     { "c": "2900373", "n": "BANVIT 12'LI KANAT KG", "g": "Kasap - Banvit" },
     { "c": "2900656", "n": "BANVIT 12'LI TAVA KG", "g": "Kasap - Banvit" },
     { "c": "2900426", "n": "BANVIT KALCALI BUT KG", "g": "Kasap - Banvit" },
+    { "c": "2900321", "n": "BANVIT CIGER KG", "g": "Kasap - Banvit" },
+    { "c": "2900586", "n": "BANVIT TASLIK KG", "g": "Kasap - Banvit" },
+    { "c": "2909976", "n": "BANVIT PILIC KOK KANAT KG", "g": "Kasap - Banvit" },
     { "c": "2930691", "n": "BUPILIC PIRZOLA KG", "g": "Kasap - Bupiliç" },
+    { "c": "2930685", "n": "BUPILIC BUTUN PILIC KG", "g": "Kasap - Bupiliç" },
+    { "c": "2930686", "n": "BUPILIC BAGET KG", "g": "Kasap - Bupiliç" },
+    { "c": "2930687", "n": "BUPILIC KALCALI BUT KG", "g": "Kasap - Bupiliç" },
+    { "c": "2930684", "n": "BUPILIC BONFILE KG", "g": "Kasap - Bupiliç" },
+    {
+      "c": "2930690",
+      "n": "BUPILIC KOK KANAT KG (KANAT INCIK)",
+      "g": "Kasap - Bupiliç"
+    },
+    {
+      "c": "2930689",
+      "n": "BUPILIC IZGARA KANAT KG (KARISIK)",
+      "g": "Kasap - Bupiliç"
+    },
+    {
+      "c": "2930688",
+      "n": "BUPILIC IZGARA TAVA KG (KEMIKSIZ DERISIZ BUT INCIK)",
+      "g": "Kasap - Bupiliç"
+    },
+    { "c": "2930692", "n": "BUPILIC CIGER KG", "g": "Kasap - Bupiliç" },
     { "c": "2930658", "n": "EKICI T.YAGLI BEYAZ PEYNIR KG", "g": "Şarküteri" },
     {
       "c": "2907100",
