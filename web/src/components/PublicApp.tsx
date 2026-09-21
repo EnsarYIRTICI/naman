@@ -79,10 +79,13 @@ export default function PublicApp() {
 
   return (
     <div className="pub">
-      <h1>
-        🛒 Stok Kodu Arama
-        {data && <span className="badge">v{data.meta.version}</span>}
-      </h1>
+      <div className="head">
+        <h1>🛒 Stok Kodu Arama</h1>
+        <a className="doclink" href="/dokuman">
+          📄 Kod Dökümanı{data?.meta.docVersion ? <span className="dv">{data.meta.docVersion}</span> : null}
+        </a>
+      </div>
+      {data?.meta.updatedAt && <div className="updated">Son güncelleme: {new Date(data.meta.updatedAt).toLocaleDateString("tr-TR")}</div>}
 
       {offline && <div className="banner">⚠️ Sunucuya ulaşılamadı, cihazda kayıtlı son veri gösteriliyor.</div>}
 
@@ -176,11 +179,7 @@ export default function PublicApp() {
         </div>
       )}
 
-      <footer>
-        Sürüm {APP_VERSION}
-        {data?.meta.updatedAt && ` · Veri ${new Date(data.meta.updatedAt).toLocaleDateString("tr-TR")} tarihli`}
-        {" · "}<a href="/dokuman" style={{ textDecoration: "underline" }}>Kod dökümanı</a>
-      </footer>
+      <footer>Sürüm {APP_VERSION}</footer>
     </div>
   );
 }

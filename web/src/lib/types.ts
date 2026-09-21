@@ -3,7 +3,7 @@ export interface Channel { id: number; name: string; code: string }
 export interface BarcodeItem { id: number; name: string; code: string }
 export interface MealCard { id: number; name: string; posName: string }
 export interface AllData { products: Product[]; channels: Channel[]; barcodes: BarcodeItem[]; mealCards: MealCard[] }
-export interface PublicData extends AllData { meta: { version: number; updatedAt: string | null } }
+export interface PublicData extends AllData { meta: { version: number; updatedAt: string | null; docVersion?: string | null } }
 export interface AdminData extends AllData { version: number }
 export interface Me { username: string; version: string; commit: string; startedAt: string }
 export interface Change { id: number; at: string; username: string | null; summary: string; version: number }
