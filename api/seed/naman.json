@@ -1,0 +1,844 @@
+{
+ "products": [
+  {
+   "code": "2900027",
+   "name": "MNV.BARBUNYA KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900100",
+   "name": "MNV.BEZELYE KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2905078",
+   "name": "MNV.BIBER ACI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900036",
+   "name": "MNV.BIBER CALIFORNIA KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900058",
+   "name": "MNV.BIBER CARLISTON KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900103",
+   "name": "MNV.BIBER DOLMA KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900061",
+   "name": "MNV.BIBER KIRMIZI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900768",
+   "name": "MNV.BIBER KOY KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900059",
+   "name": "MNV.BIBER SIVRI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900144",
+   "name": "MNV.BIBER SIVRI KIL KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2930089",
+   "name": "MNV.BIBER JELIBON KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900357",
+   "name": "MNV.BIBER SILI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900104",
+   "name": "MNV.DOMATES KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900154",
+   "name": "MNV.DOMATES KOKTEYL KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2905083",
+   "name": "MNV.DOMATES PEMBE KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900202",
+   "name": "MNV.DOMATES PETEMEK KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900035",
+   "name": "MNV.DOMATES SALKIM KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900102",
+   "name": "MNV.FASULYE CALI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900125",
+   "name": "MNV.HAVUC KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900012",
+   "name": "MNV.ISPANAK KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2904159",
+   "name": "MNV.ISTIRIDYE MANTAR KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900245",
+   "name": "MNV.KABAK KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900010",
+   "name": "MNV.LAHANA BEYAZ KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900037",
+   "name": "MNV.LAHANA KIRMIZI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900064",
+   "name": "MNV.PATATES KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900072",
+   "name": "MNV.PATLICAN BOSTAN KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900006",
+   "name": "MNV.PATLICAN KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900015",
+   "name": "MNV.PIRASA KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2909185",
+   "name": "MNV.SALATALIK KORNISON KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900063",
+   "name": "MNV.SALATALIK CENGELKOY KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900105",
+   "name": "MNV.SALATALIK KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2904071",
+   "name": "MNV.SOGAN ARPACIK KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900009",
+   "name": "MNV.SOGAN KIRMIZI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900047",
+   "name": "MNV.SOGAN KURU KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900097",
+   "name": "MNV.SOGAN GUMUS KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2930341",
+   "name": "MNV.TAZE SOGAN KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900108",
+   "name": "MNV.TURP KIRMIZI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900295",
+   "name": "MNV.ZENCEFIL KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900088",
+   "name": "MNV.PANCAR KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900544",
+   "name": "MNV.MANTI KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900051",
+   "name": "MNV.FASULYE SEKER KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900042",
+   "name": "MNV.KURU SARIMSAK KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2900213",
+   "name": "MNV.ACUR KG",
+   "group": "Sebze"
+  },
+  {
+   "code": "2820232",
+   "name": "MNV.ANANAS ADET",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2904052",
+   "name": "MNV.ARMUT DEVECI KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2930351",
+   "name": "MNV.ARMUT ETRUSKA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900034",
+   "name": "MNV.ARMUT SANTAMARIA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900139",
+   "name": "MNV.CEVIZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2901118",
+   "name": "MNV.CILEK EKO KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900026",
+   "name": "MNV.CILEK KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900030",
+   "name": "MNV.ELMA GOLDEN LUX KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900085",
+   "name": "MNV.ELMA GALA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900263",
+   "name": "MNV.ELMA GOLDEN NO:2 KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900114",
+   "name": "MNV.ELMA GRANNY SMITH KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900031",
+   "name": "MNV.ELMA STARKING LUX KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900369",
+   "name": "MNV.ERIK CAN KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900348",
+   "name": "MNV.ERIK FREZE KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900662",
+   "name": "MNV.ERIK ITALYAN KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900163",
+   "name": "MNV.ERIK KIRMIZI KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900227",
+   "name": "MNV.ERIK PAPAZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900120",
+   "name": "MNV.GREYFURT KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900319",
+   "name": "MNV.HURMA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900427",
+   "name": "MNV.KARPUZ CEKIRDEKSIZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900033",
+   "name": "MNV.KARPUZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900127",
+   "name": "MNV.KAVUN KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900249",
+   "name": "MNV.KAVUN KIRKAGAC KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900927",
+   "name": "MNV.KAYISI KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900687",
+   "name": "MNV.KAYISI MALATYA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900112",
+   "name": "MNV.KAYISI SEKERPARE KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900079",
+   "name": "MNV.KAYISI IGDIR KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2930298",
+   "name": "MNV.KIRAZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900220",
+   "name": "MNV.KIRAZ LUX KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900057",
+   "name": "MNV.KIVI KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900895",
+   "name": "MNV.KIZILCIK KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900028",
+   "name": "MNV.LIMON KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900024",
+   "name": "MNV.MUZ ITHAL KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900142",
+   "name": "MNV.MUZ YERLI LUX KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900503",
+   "name": "MNV.NAR LUX KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900256",
+   "name": "MNV.NEKTARI BEYAZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900086",
+   "name": "MNV.NEKTARI KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900630",
+   "name": "MNV.PEPINO KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900119",
+   "name": "MNV.PORTAKAL KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900113",
+   "name": "MNV.PORTAKAL FINIKE SIKMALIK KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2908791",
+   "name": "MNV.TAZE CEVIZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2904189",
+   "name": "MNV.INCIR BEYAZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900188",
+   "name": "MNV.INCIR SIYAH KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2904013",
+   "name": "MNV.ARMUT BAHRIBEY KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900991",
+   "name": "MNV.SEFTALI LUX KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900118",
+   "name": "MNV.SEFTALI JAPON KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2909141",
+   "name": "MNV.UZUM BEYAZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900176",
+   "name": "MNV.UZUM SIYAH KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2904068",
+   "name": "MNV.ERIK ALYANAK KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900141",
+   "name": "MNV.ERIK ANJELIKA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2906135",
+   "name": "MNV.ERIK MURDUM KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900074",
+   "name": "MNV.UZUM CEKIRDEKSIZ KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2904181",
+   "name": "MNV.UZUM REZAKI KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2900718",
+   "name": "MNV.MANDALINA KG",
+   "group": "Egzotik Meyveler"
+  },
+  {
+   "code": "2904142",
+   "name": "SEN PILIC BUTUN TAVUK KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904116",
+   "name": "SEN PILIC BAGET KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904138",
+   "name": "SEN PILIC BONFILE KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904114",
+   "name": "SEN PILIC KALCALI BUT KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904119",
+   "name": "SEN PILIC PIRZOLA KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904124",
+   "name": "SEN PILIC IZGARA TAVA (BUT INCIK) KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904121",
+   "name": "SEN PILIC KANAT KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904126",
+   "name": "SEN PILIC KELEBEK KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904120",
+   "name": "SEN PILIC KOK KANAT KG (KANAT INCIK)",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2902106",
+   "name": "SEN PILIC TABAKLI UCLU KANAT KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904136",
+   "name": "SEN PILIC CIGER KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2904140",
+   "name": "SEN PILIC TASLIK KG",
+   "group": "Kasap - Şen Piliç"
+  },
+  {
+   "code": "2906002",
+   "name": "BEYBILIC BAGET KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906001",
+   "name": "BEYBILIC KALCALI BUT KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906011",
+   "name": "BEYBILIC BUTUN PILIC KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906009",
+   "name": "BEYBILIC GOGUS BONFILE KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906003",
+   "name": "BEYBILIC IZGARA KANAT KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906012",
+   "name": "BEYBILIC IZGARA TAVA KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906004",
+   "name": "BEYBILIC PIRZOLA KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2900416",
+   "name": "BEYBILIC TASLIK KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2900543",
+   "name": "BEYBILIC CIGER KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906013",
+   "name": "BEYBILIC UCLU KANAT KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2906010",
+   "name": "BEYBILIC PILIC UCSUZ KANAT TBK (SP) KG",
+   "group": "Kasap - Beybiliç"
+  },
+  {
+   "code": "2900209",
+   "name": "BANVIT BUTUN TAVUK KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900719",
+   "name": "BANVIT BAGET KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900909",
+   "name": "BANVIT BONFILE KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2930046",
+   "name": "BANVIT PIRZOLA KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900373",
+   "name": "BANVIT 12'LI KANAT KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900656",
+   "name": "BANVIT 12'LI TAVA KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900426",
+   "name": "BANVIT KALCALI BUT KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900321",
+   "name": "BANVIT CIGER KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2900586",
+   "name": "BANVIT TASLIK KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2909976",
+   "name": "BANVIT PILIC KOK KANAT KG",
+   "group": "Kasap - Banvit"
+  },
+  {
+   "code": "2930691",
+   "name": "BUPILIC PIRZOLA KG",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930685",
+   "name": "BUPILIC BUTUN PILIC KG",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930686",
+   "name": "BUPILIC BAGET KG",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930687",
+   "name": "BUPILIC KALCALI BUT KG",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930684",
+   "name": "BUPILIC BONFILE KG",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930690",
+   "name": "BUPILIC KOK KANAT KG (KANAT INCIK)",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930689",
+   "name": "BUPILIC IZGARA KANAT KG (KARISIK)",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930688",
+   "name": "BUPILIC IZGARA TAVA KG (KEMIKSIZ DERISIZ BUT INCIK)",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930692",
+   "name": "BUPILIC CIGER KG",
+   "group": "Kasap - Bupiliç"
+  },
+  {
+   "code": "2930658",
+   "name": "EKICI T.YAGLI BEYAZ PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2907100",
+   "name": "EKICI T.YAGLI BEYAZ LOKUM PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2903077",
+   "name": "ALTINKILIC TAM YAGLI KLASIK BEYAZ PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900684",
+   "name": "ALTINKILIC TRAKYA ESKI KASAR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900807",
+   "name": "ALTINKILIC VAKUMLU IZMIR TULUM PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900447",
+   "name": "UNAL ANADOLU ESKI KASAR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2901875",
+   "name": "UNAL T.YAGLI BEYAZ PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900885",
+   "name": "UNAL CECIL PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900963",
+   "name": "UNAL LOR KAHVALTILIK KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2930033",
+   "name": "MUSLUMOGLU RIZE KAVURMA KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2901226",
+   "name": "MUSLUMOGLU FERMENTE SUCUK KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2909990",
+   "name": "BESLER KAVURMA KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900894",
+   "name": "BESLER GOLD DANA SUCUK KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2930672",
+   "name": "CANTURK FERMENTE SUCUK KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2900709",
+   "name": "CIHANSER ANADOLU (CALIDERE) ESKI KASAR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2930336",
+   "name": "GURSUT KOY PEYNIRI KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2901400",
+   "name": "GURSUT IZMIR TULUM KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2990350",
+   "name": "CEMALIM TAM YAGLI KLASIK PEYNIR KG",
+   "group": "Şarküteri"
+  },
+  {
+   "code": "2930673",
+   "name": "GUNDOGU ERZINCAN TULUM PEYNIRI KG",
+   "group": "Şarküteri"
+  }
+ ],
+ "channels": [
+  {
+   "name": "Trendyol",
+   "code": "99998"
+  },
+  {
+   "name": "Getir",
+   "code": "999914"
+  }
+ ],
+ "barcodes": [
+  {
+   "name": "Ürün İptal",
+   "code": "BEYKOZ"
+  },
+  {
+   "name": "Lipton Ice Tea Limon",
+   "code": "8690574114443"
+  }
+ ],
+ "mealCards": [
+  {
+   "name": "Ticket",
+   "posName": "Edenred"
+  },
+  {
+   "name": "Metropol",
+   "posName": "Metropol"
+  },
+  {
+   "name": "Multinet",
+   "posName": "Multipos"
+  },
+  {
+   "name": "Paye Kart",
+   "posName": "İste Paycell"
+  },
+  {
+   "name": "Sodexo",
+   "posName": "Ceppos / Pluxee"
+  },
+  {
+   "name": "Setcard",
+   "posName": "Setpos"
+  },
+  {
+   "name": "Tokenflex",
+   "posName": "Tokenflex"
+  }
+ ]
+}

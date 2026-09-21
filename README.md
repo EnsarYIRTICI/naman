@@ -1,107 +1,74 @@
-# install-naman.sh
+# Naman v3 — Kasa stok kodu arama + yönetim paneli
 
-naman'ı sıfırdan bir Ubuntu sunucusuna kurar (nginx + Let's Encrypt wildcard sertifika + deploy),
-ya da altyapı zaten kuruluysa sadece son değişiklikleri çekip yayına alır.
+Kasiyerler için ürün/kod arama sayfası (`/`, giriş gerektirmez) ve kodları düzenleyip toplu veri yükleyebildiğiniz yönetim paneli (`/admin`, giriş gerekir).
 
-## Gereksinimler
+**Yığın:** Next.js 16 + TypeScript + Tailwind CSS 4 (arayüz) · Express 5 + TypeScript (API) · PostgreSQL 17 · Docker Compose. Nginx compose dışında, host'ta çalışır.
 
-- Ubuntu 22.04+ / root erişimi (`sudo`)
-- Bir Cloudflare API token'ı (DNS-01 doğrulaması için — bkz. aşağıdaki "Cloudflare Token" bölümü)
-- `${BASE_DOMAIN}` (script içinde `xenny.cloud`) domaininin Cloudflare üzerinde yönetiliyor olması
+```
+tarayıcı → host nginx ─┬─ /api/ → api (127.0.0.1:4100) → postgres (iç ağ)
+                       └─ /     → web (127.0.0.1:3100)
+```
 
-> **Not:** Aşağıdaki komutlarda branch `master` varsayıldı; reponuzun gerçek branch
-> adı farklıysa (ör. `main`) URL'i buna göre güncelleyin.
-
-## Hızlı Kurulum
-
-Scripti indirip inceledikten sonra çalıştırmak (önerilen):
+## Kurulum
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/EnsarYIRTICI/naman/master/install-naman.sh -o install-naman.sh
-chmod +x install-naman.sh
-sudo ./install-naman.sh
+cp .env.example .env      # CHANGE_ME olanları doldurun; APP_ORIGIN = tarayıcıdaki adres
+docker compose up -d --build
+docker compose logs -f api
 ```
 
-Doğrudan pipe ile çalıştırmak (önce içeriğini gözden geçirmeden root olarak script
-çalıştırmak risklidir, yalnızca scripti ve kaynağı güvendiğiniz durumlarda kullanın):
+`nginx/naman.conf` dosyasını host nginx'inize uygulayın (`nginx -t && systemctl reload nginx`). İlk açılışta veritabanı **eski naman verisiyle** (158 ürün, kanal kodları, barkodlar, yemek kartları) otomatik dolar.
+
+İlk yönetici `.env`'deki `ADMIN_USERNAME` / `ADMIN_PASSWORD` ile oluşur (sonra `ADMIN_PASSWORD` satırını silin). Yönetim: `https://naman.xenny.cloud/admin`
+
+## Yönetim paneli (/admin)
+
+- **Ürünler / Kanallar / Barkodlar / Yemek kartları:** ekle, düzenle, sil. Yapılan her değişiklik kasa sayfasına anında yansır.
+- **Veri yükle:** `.json` (eski `products.json` biçimi ya da panelden indirilen yedek) veya ürün listesi için `.csv`. Önce **önizleme** gösterilir (kaç kayıt eklenecek/güncellenecek/silinecek); onaylamadan hiçbir şey değişmez. Dosyada hata varsa (tekrarlanan kod, boş alan vb.) hiçbir şey yüklenmez ve nedeni listelenir.
+  - **Birleştir:** yeni kayıtlar eklenir, var olanlar güncellenir, hiçbir şey silinmez.
+  - **Değiştir:** dosyada olmayan kayıtlar silinir; liste dosyadaki gibi olur.
+- **CSV biçimi:** `Kod;Ürün Adı;Grup` (Excel'den "CSV olarak kaydet"; UTF-8 ya da Türkçe Windows kodlaması otomatik anlaşılır; ayraç `;` `,` veya sekme).
+- **Yedek indir:** tüm veriyi JSON olarak indirir; aynı dosya "Değiştir" ile geri yüklenebilir.
+- **Geçmiş:** her değişikliği (kim, ne zaman, ne) ve veri sürümünü gösterir. Kasa sayfasındaki `v9` gibi rozet veri sürümüdür.
+
+## Kullanıcı yönetimi
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/EnsarYIRTICI/naman/master/install-naman.sh | sudo bash
+docker compose exec api node dist/cli.js user add <kullanici>      # şifre ekranda görünmez
+docker compose exec api node dist/cli.js user passwd <kullanici>   # açık oturumlar kapanır
+docker compose exec api node dist/cli.js user delete <kullanici>
+docker compose exec api node dist/cli.js user list
 ```
 
-## Cloudflare Token
+Rol ayrımı yoktur: giriş yapan herkes her şeyi düzenleyebilir.
 
-Script wildcard sertifika almak için Cloudflare DNS-01 doğrulaması kullanır ve şu dosyayı arar:
+## Kasa sayfası hakkında
 
-```
-/root/.secrets/certbot/cloudflare.ini
-```
+- **Kod gösterimi:** 7 haneli kod `290` ile başlıyorsa kasiyerin gireceği kısım sarı vurgulanır (`2900027` → **27**, `2905083` → **5083**); diğer kodlar tam girilir. Bu kural `kasa ürün kodları` PDF'indeki vurgulamayla 158/158 üründe aynıdır.
+- **Çevrimdışı yedek:** sunucuya ulaşılamazsa cihazda kayıtlı son veri gösterilir (uyarı bandıyla).
+- Sayfa `noindex` içerir (arama motorlarında görünmez).
+- Kategori (Sebze/Meyve/Kasap/Şarküteri) grup adından belirlenir: "Kasap - ..." → Kasap, adında "meyve" geçen → Meyve, vb.
 
-Dosyanın içeriği (tek satır):
-
-```
-dns_cloudflare_api_token = <CLOUDFLARE_API_TOKEN>
-```
-
-Oluşturma:
+## Yedek (sunucu)
 
 ```bash
-mkdir -p /root/.secrets/certbot
-cat > /root/.secrets/certbot/cloudflare.ini <<'EOF'
-dns_cloudflare_api_token = <CLOUDFLARE_API_TOKEN>
-EOF
-chmod 600 /root/.secrets/certbot/cloudflare.ini
+docker compose exec -T db pg_dump -U naman naman | gzip > naman-db-$(date +%F).sql.gz
 ```
 
-Token'a **Zone:DNS:Edit** yetkisi ilgili zone (`xenny.cloud`) için verilmiş olmalı.
-Bu dosya yoksa script diğer her şeyi (nginx kurulumu, repo çekme, deploy) yapar ama
-sertifika adımında net bir hata mesajıyla durur — script içinde hiçbir token
-hardcode edilmemiştir.
+Panelden indirilen JSON yedek de yeterlidir (ürünler, kanallar, barkodlar, yemek kartları), ama kullanıcıları içermez.
 
-## Ayarlanabilir Değişkenler
+## Eski statik siteden geçiş
 
-Script başındaki değişkenler kendi ortamınıza göre düzenlenmeli:
+`install-naman.sh` ve `/var/www/naman.xenny.cloud` altındaki statik dosyalar artık kullanılmaz. Nginx yapılandırmasını `nginx/naman.conf` ile değiştirin; wildcard sertifika ve yenileme hook'u aynen çalışmaya devam eder. Eski `data/products.json` içeriği ilk açılışta zaten otomatik yüklenir.
 
-| Değişken         | Varsayılan                                  | Açıklama                                   |
-| ---------------- | ------------------------------------------- | ------------------------------------------ |
-| `DOMAIN`         | `naman.xenny.cloud`                         | naman'ın yayınlanacağı subdomain           |
-| `BASE_DOMAIN`    | `xenny.cloud`                               | wildcard sertifikanın alınacağı kök domain |
-| `REPO_URL`       | `https://github.com/EnsarYIRTICI/naman.git` | naman repo adresi                          |
-| `REPO_DIR`       | `~/repo/naman`                              | reponun sunucuda klonlanacağı yer          |
-| `WEB_DIR`        | `/var/www/naman.xenny.cloud`                | nginx'in servis edeceği dizin              |
-| `CERT_EMAIL`     | `admin@xenny.cloud`                         | certbot bildirim maili — **değiştirin**    |
-| `CF_CREDENTIALS` | `/root/.secrets/certbot/cloudflare.ini`     | Cloudflare token dosyasının yolu           |
+## Geliştirme
 
-## Script Ne Yapar
-
-1. nginx kurulu değilse kurar ve başlatır.
-2. certbot + `python3-certbot-dns-cloudflare` eklentisi kurulu değilse kurar.
-3. `REPO_DIR`'de repo yoksa klonlar, varsa `git pull` ile günceller.
-4. Repo içeriğini `rsync -a --delete` ile `WEB_DIR`'e kopyalar.
-5. Wildcard sertifika (`*.xenny.cloud`) yoksa Cloudflare DNS-01 ile alır.
-6. nginx configini 80 → 443 yönlendirmesi ve SSL ile yazar/günceller.
-7. certbot yenilemesi sonrası nginx'i otomatik reload eden bir hook ekler.
-8. nginx configini test edip (`nginx -t`) reload eder.
-
-## Tekrar Çalıştırma
-
-Script tamamen idempotent'tir — nginx, certbot, sertifika ve config için önce
-mevcut durumu kontrol eder, eksik olanı tamamlar. Altyapı zaten hazırsa
-(nginx kurulu, sertifika mevcut, config zaten https) script yalnızca:
-
-```
-git pull → rsync → nginx -t → systemctl reload nginx
+```bash
+cd api && npm i && DATABASE_URL=postgres://... APP_ORIGIN=http://localhost:3100 ADMIN_USERNAME=admin ADMIN_PASSWORD=... PORT=4100 npm run dev
+cd web && npm i && npm run dev        # http://localhost:3100 ; /api istekleri localhost:4100'e yönlenir
+npm test                              # hem api/ hem web/ içinde
 ```
 
-adımlarını çalıştırır — yani eski `naman.sh` ile aynı işi görür. Deploy sonrası
-her seferinde bu scripti çalıştırmanız yeterli.
+## Güvenlik notları
 
-## Sorun Giderme
-
-- **`nginx -t` hata veriyor:** Config dosyasını (`/etc/nginx/sites-available/naman.xenny.cloud`)
-  elle kontrol edin; script bir önceki geçerli configi ezmiş olabilir.
-- **Sertifika alınamıyor:** `CF_CREDENTIALS` dosyasının varlığını, izinlerini (600) ve
-  token'ın doğru zone yetkisine sahip olduğunu doğrulayın. `certbot certonly ... -v`
-  ile elle çalıştırıp hatayı görebilirsiniz.
-- **Site 404 veriyor:** `WEB_DIR` içinde `index.html` olduğundan ve `rsync`'in
-  hatasız tamamlandığından emin olun.
+Şifreler scrypt ile hash'lenir, oturum belirteçleri veritabanında yalnızca SHA-256 özeti tutulur. Çerez: HttpOnly, SameSite=Strict, HTTPS'te Secure. Durum değiştiren isteklerde Origin kontrolü (CSRF). Hatalı girişte hız sınırı (IP başına 15 dk'da 8), bellekte tutulur, servis yeniden başlayınca sıfırlanır. PostgreSQL'in portu dışarı açılmaz.

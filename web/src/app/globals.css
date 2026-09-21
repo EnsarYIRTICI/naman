@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-accent: #37474f;
+}
+
+body {
+  @apply m-0 bg-neutral-100 text-neutral-900;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ───────── Herkese açık arama sayfası (.pub) ───────── */
+.pub {
+  --accent: #37474f;
+  --accent-soft: #eceff1;
+  --accent-border: #cfd8dc;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.pub [data-cat="sebze"] { --c: #2e7d32; --c-soft: #e8f5e9; }
+.pub [data-cat="meyve"] { --c: #9c27b0; --c-soft: #f3e5f5; }
+.pub [data-cat="kasap"] { --c: #b71c1c; --c-soft: #ffebee; }
+.pub [data-cat="sarkuteri"] { --c: #8d6e00; --c-soft: #fff8dc; }
+
+.pub h1 { font-size: 1.15rem; margin: 8px 0 14px; color: var(--accent); }
+.pub .badge {
+  display: inline-block; font-size: 0.7rem; font-weight: 600; color: var(--accent);
+  background: var(--accent-soft); border: 1px solid var(--accent-border);
+  border-radius: 999px; padding: 2px 8px; margin-left: 8px; vertical-align: middle;
+}
+.pub .search-box { position: sticky; top: 0; background: #f3f4f6; padding: 8px 0 12px; z-index: 10; }
+.pub .search-box input {
+  width: 100%; padding: 14px 16px; font-size: 1.05rem; background: #fff;
+  border: 2px solid var(--accent); border-radius: 10px; outline: none;
+}
+.pub .search-box input:focus { border-color: #607d8b; }
+.pub .count { font-size: 0.85rem; color: #666; margin: 6px 2px 0; }
+.pub .chips { display: flex; gap: 6px; margin-top: 8px; overflow-x: auto; padding-bottom: 2px; }
+.pub .chip {
+  flex: 0 0 auto; padding: 6px 12px; border: 2px solid var(--c, var(--accent)); background: #fff;
+  color: var(--c, var(--accent)); border-radius: 999px; font-size: 0.85rem; font-weight: 600; cursor: pointer;
+}
+.pub .chip.active { background: var(--c, var(--accent)); color: #fff; }
+
+.pub .info-box {
+  background: #fff; border: 1px solid var(--accent-border); border-radius: 10px;
+  padding: 10px 14px; margin: 10px 0; font-size: 0.9rem;
+}
+.pub .info-box summary { cursor: pointer; font-weight: 700; color: var(--accent); }
+.pub .info-box .row { display: flex; justify-content: space-between; gap: 12px; padding: 5px 0; border-bottom: 1px solid #eee; }
+.pub .info-box .row:last-of-type { border-bottom: 0; }
+.pub .info-box .row .code, .pub .info-box .row b { font-weight: 700; }
+.pub .info-box .note { margin-top: 6px; font-size: 0.8rem; color: #666; }
+.pub .info-box p { margin: 8px 0 0; line-height: 1.45; color: #444; }
+
+.pub .tabs { display: flex; gap: 6px; margin: 14px 0 6px; }
+.pub .tab {
+  flex: 1; padding: 10px; border: 2px solid var(--accent); background: #fff; color: var(--accent);
+  border-radius: 10px; font-weight: 700; cursor: pointer;
+}
+.pub .tab.active { background: var(--accent); color: #fff; }
+
+.pub .group-title {
+  background: var(--c, var(--accent)); color: #fff; padding: 8px 12px; border-radius: 8px;
+  font-weight: 700; font-size: 0.95rem; margin: 14px 0 6px;
+}
+.pub ul { list-style: none; margin: 0; padding: 0; }
+.pub li {
+  display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #fff;
+  border-left: 4px solid var(--c, var(--accent)); padding: 10px 12px; margin-bottom: 4px; border-radius: 6px;
+}
+.pub li .name { font-size: 0.95rem; word-break: break-word; }
+.pub .code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; white-space: nowrap; }
+.pub .code .pre { color: #9aa0a6; font-weight: 500; }
+.pub mark.typed { background: #ffe27a; color: #3b2f00; padding: 1px 4px; margin-left: 3px; border-radius: 4px; }
+.pub mark.hl { background: #fff3a0; color: inherit; border-radius: 2px; }
+.pub .empty { text-align: center; color: #777; padding: 28px 0; }
+.pub .banner { background: #fff4c7; border: 1px solid #f0d878; border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; font-size: 0.85rem; }
+.pub .barcode-row {
+  display: flex; justify-content: space-between; gap: 12px; background: #fff; padding: 14px; margin-bottom: 6px;
+  border-radius: 8px; cursor: pointer; border: 1px solid var(--accent-border);
+}
+.pub footer { margin: 24px 0 8px; text-align: center; font-size: 0.75rem; color: #888; }
+.pub .modal {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center;
+  justify-content: center; z-index: 50; padding: 16px;
+}
+.pub .modal-content { background: #fff; border-radius: 14px; padding: 20px; text-align: center; max-width: 100%; }
+.pub .modal-label { font-weight: 700; margin-bottom: 10px; }
+.pub .modal-content svg { max-width: 100%; height: auto; }
+.pub .modal-content button {
+  margin-top: 12px; padding: 10px 22px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer;
+}
