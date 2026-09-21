@@ -44,6 +44,24 @@ const MIGRATIONS: { id: string; sql: string }[] = [
       );
     `,
   },
+  {
+    id: "002_docs",
+    sql: `
+      -- Sürümlü döküman ("Kasa Ürün Kodları"): snapshot = veriden üretilen sayfa, pdf = eski (arşiv) PDF
+      CREATE TABLE doc_versions (
+        id SERIAL PRIMARY KEY,
+        label TEXT NOT NULL UNIQUE,
+        kind TEXT NOT NULL CHECK (kind IN ('snapshot', 'pdf')),
+        note TEXT NOT NULL DEFAULT '',
+        published_at TIMESTAMPTZ,
+        published_by TEXT,
+        snapshot JSONB,
+        pdf_name TEXT,
+        pdf BYTEA,
+        sort_key INTEGER NOT NULL
+      );
+    `,
+  },
 ];
 
 export async function migrate(pool: Pool): Promise<void> {

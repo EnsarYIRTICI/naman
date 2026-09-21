@@ -60,3 +60,9 @@ export async function withTx<T>(pool: Pool, fn: (c: PoolClient) => Promise<T>): 
     c.release();
   }
 }
+
+/** Veriyi değiştirmeyen ama denetim için izlenmesi gereken işlemleri (örn. döküman yayınlama) geçmişe yazar. */
+export async function logChange(client: PoolClient, username: string | null, summary: string): Promise<void> {
+  const v = await getVersion(client);
+  await client.query("INSERT INTO changes (username, summary, version) VALUES ($1, $2, $3)", [username, summary, v]);
+}

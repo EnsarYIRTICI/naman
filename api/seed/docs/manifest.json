@@ -1,0 +1,7 @@
+[
+  { "label": "v1", "file": "kodlar-v1.pdf", "note": "İlk sürüm. 4 sayfa, sebze listesinde (PAKET) ürünleri var." },
+  { "label": "v2", "file": "kodlar-v2.pdf", "note": "(PAKET) ürünleri kaldırıldı. Yeni tasarım, 2 sayfa." },
+  { "label": "v3", "file": "kodlar-v3.pdf", "note": "Kasap 42 ürüne çıktı (Şen Piliç, Beybiliç, Banvit, Bupiliç)." },
+  { "label": "v4", "file": "kodlar-v4.pdf", "note": "Özel işlem kodları kaldırıldı, yerine yemek kartları bölümü eklendi." },
+  { "label": "v5", "file": "kodlar-v5.pdf", "note": "Yemek kartları düzeltildi: Metropol ve Tokenflex." }
+]

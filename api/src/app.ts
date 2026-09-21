@@ -2,6 +2,7 @@ import express, { type NextFunction, type Request, type Response } from "express
 import { COOKIE_NAME, parseCookies } from "./auth";
 import type { Deps } from "./deps";
 import { adminRoutes } from "./routes/admin";
+import { adminDocRoutes, publicDocRoutes } from "./routes/doc";
 import { publicDataRoutes } from "./routes/public";
 import { publicRoutes } from "./routes/session";
 
@@ -39,6 +40,7 @@ export function buildApp(d: Deps) {
   const api = express.Router();
   api.use(publicRoutes(d)); // health, login, logout
   api.use(publicDataRoutes(d)); // /public/data (girişsiz)
+  api.use(publicDocRoutes(d)); // /public/doc (girişsiz)
 
   // Buradan sonrası oturum gerektirir
   api.use(async (req: Request, res: Response, next: NextFunction) => {
@@ -55,6 +57,7 @@ export function buildApp(d: Deps) {
   api.get("/me", (req, res) => res.json({ username: req.user!.username, ...d.version }));
   api.use(express.json({ limit: "5mb" }));
   api.use(adminRoutes(d));
+  api.use(adminDocRoutes(d));
   api.use((_req, res) => res.status(404).json({ error: "Bulunamadı." }));
   app.use("/api", api);
 

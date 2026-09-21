@@ -15,3 +15,21 @@ export interface SectionPreview {
 export interface ImportResponse {
   dry: boolean; mode: "merge" | "replace"; applied?: boolean; version?: number; notes: string[]; sections: SectionPreview[];
 }
+
+export interface DocVersionPublic { label: string; kind: "snapshot" | "pdf"; note: string; publishedAt: string | null; current: boolean }
+export interface DocSnapshot {
+  generatedAt: string;
+  products: { code: string; name: string; group: string }[];
+  channels: { name: string; code: string }[];
+  mealCards: { name: string; posName: string }[];
+}
+export interface DocSelected extends DocVersionPublic { snapshot: DocSnapshot | null; pdfUrl: string | null }
+export interface DocPublic { versions: DocVersionPublic[]; selected: DocSelected | null }
+export interface DocAdmin {
+  current: string | null;
+  versions: (DocVersionPublic & { id: number; publishedBy: string | null; pdfSize: number })[];
+  suggestion: {
+    baseline: string | null; hasChanges: boolean; note: string;
+    changes: { key: string; label: string; added: number; updated: number; removed: number }[];
+  };
+}

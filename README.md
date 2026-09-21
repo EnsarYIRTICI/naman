@@ -1,6 +1,6 @@
-# Naman v3 — Kasa stok kodu arama + yönetim paneli
+# Naman v3.1 — Kasa stok kodu arama + yönetim paneli + sürümlü kod dökümanı
 
-Kasiyerler için ürün/kod arama sayfası (`/`, giriş gerektirmez) ve kodları düzenleyip toplu veri yükleyebildiğiniz yönetim paneli (`/admin`, giriş gerekir).
+Kasiyerler için ürün/kod arama sayfası (`/`, giriş gerektirmez), kodları düzenleyip toplu veri yükleyebildiğiniz yönetim paneli (`/admin`, giriş gerekir) ve eski **namdoc** yerine geçen sürümlü "Kasa Ürün Kodları" dökümanı (`/dokuman`, giriş gerektirmez).
 
 **Yığın:** Next.js 16 + TypeScript + Tailwind CSS 4 (arayüz) · Express 5 + TypeScript (API) · PostgreSQL 17 · Docker Compose. Nginx compose dışında, host'ta çalışır.
 
@@ -31,6 +31,19 @@ docker compose logs -f api
 - **Yedek indir:** tüm veriyi JSON olarak indirir; aynı dosya "Değiştir" ile geri yüklenebilir.
 - **Geçmiş:** her değişikliği (kim, ne zaman, ne) ve veri sürümünü gösterir. Kasa sayfasındaki `v9` gibi rozet veri sürümüdür.
 
+## Döküman (namdoc.xenny.cloud)
+
+Eskiden PDF'i elle üretip `index.html`'e sürüm satırı ekleyerek yayınlıyordunuz. Artık döküman **veriden otomatik** oluşur:
+
+- **Yayınla:** `/admin` → **Döküman** sekmesi. "Yayınla" o anki ürün, kanal ve yemek kartı verisinin kopyasını yeni sürüm (`v7`, `v8` ...) olarak saklar. **Sürüm notu iki sürüm arasındaki farktan otomatik yazılır** ("Ürünler: 3 eklendi (...), 1 silindi (...)"), isterseniz düzenlersiniz. Veride değişiklik yoksa yayınlamaya izin vermez.
+- **Güncel sürüm:** Kasiyerlerin varsayılan olarak gördüğü sürümdür. Yeni sürümü yayınlarken "güncel yap" seçili gelir; hata yaptıysanız listeden eski bir sürümü **"Güncel yap"** ile geri alırsınız (yayınlanmış sürümler bir daha değişmez).
+- **Eski PDF'ler:** v1–v5 ilk kurulumda arşiv olarak yüklenir (birebir aynı dosyalar) ve sürüm listesinde "PDF arşiv" etiketiyle görünür. İlk açılışta mevcut veriden `v6` (ilk dijital sürüm) oluşturulur ve güncel yapılır.
+- **Doğrudan bağlantılar:** `https://namdoc.xenny.cloud/?v=v3` gibi eski adresler aynen çalışır. Eski sürüm açıkken üstte uyarı ve "Güncel sürüme dön" bağlantısı çıkar.
+- **PDF:** Yeni sürümler sayfa olarak gösterilir (telefonda okunur, metin aranabilir). PDF gerekirse sayfadaki **"Yazdır / PDF kaydet"** düğmesi tarayıcıdan A4 PDF üretir. (Sunucu tarafında ayrı PDF dosyası üretilmez.)
+- **Sınırlar:** Sürümlere barkodlar dahil değildir (eski PDF'te de yoktu). Sürüm silmek geri alınamaz; güncel sürüm silinemez. Arşiv PDF'ler sayfa içinde gömülü gösterilir, bazı telefonlarda yalnızca ilk sayfa görünebilir; "PDF'i yeni sekmede aç" bağlantısı vardır.
+
+`nginx/namdoc.conf`: `namdoc.xenny.cloud` alan adını bu uygulamaya bağlar. Bu alan adında **sadece** döküman ve okuma API'si (`/api/public/`) açıktır; `/admin` ve girişli API'ler kapalıdır (404).
+
 ## Kullanıcı yönetimi
 
 ```bash
@@ -49,6 +62,14 @@ Rol ayrımı yoktur: giriş yapan herkes her şeyi düzenleyebilir.
 - Sayfa `noindex` içerir (arama motorlarında görünmez).
 - Kategori (Sebze/Meyve/Kasap/Şarküteri) grup adından belirlenir: "Kasap - ..." → Kasap, adında "meyve" geçen → Meyve, vb.
 
+## Güncelleme (v3 → v3.1)
+
+```bash
+cd /opt/naman && git pull && docker compose up -d --build
+```
+
+Veritabanı şeması (döküman tablosu) ve arşiv PDF'ler ilk açılışta otomatik eklenir; mevcut ürün verinize dokunulmaz.
+
 ## Yedek (sunucu)
 
 ```bash
@@ -57,9 +78,11 @@ docker compose exec -T db pg_dump -U naman naman | gzip > naman-db-$(date +%F).s
 
 Panelden indirilen JSON yedek de yeterlidir (ürünler, kanallar, barkodlar, yemek kartları), ama kullanıcıları içermez.
 
-## Eski statik siteden geçiş
+## Eski statik sitelerden geçiş
 
-`install-naman.sh` ve `/var/www/naman.xenny.cloud` altındaki statik dosyalar artık kullanılmaz. Nginx yapılandırmasını `nginx/naman.conf` ile değiştirin; wildcard sertifika ve yenileme hook'u aynen çalışmaya devam eder. Eski `data/products.json` içeriği ilk açılışta zaten otomatik yüklenir.
+**namdoc:** `nginx/namdoc.conf` ile eski yapılandırmayı değiştirin (yedeğini alın); eski namdoc container'ını/klasörünü durdurup silebilirsiniz. Eski PDF'ler ve sürüm notları otomatik taşınır.
+
+**naman:** `install-naman.sh` ve `/var/www/naman.xenny.cloud` altındaki statik dosyalar artık kullanılmaz. Nginx yapılandırmasını `nginx/naman.conf` ile değiştirin; wildcard sertifika ve yenileme hook'u aynen çalışmaya devam eder. Eski `data/products.json` içeriği ilk açılışta zaten otomatik yüklenir.
 
 ## Geliştirme
 

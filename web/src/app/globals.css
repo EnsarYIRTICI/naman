@@ -92,3 +92,61 @@ body {
 .pub .modal-content button {
   margin-top: 12px; padding: 10px 22px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer;
 }
+
+/* ───────── Döküman sayfası (.doc): "Kasa Ürün Kodları" ───────── */
+.doc { max-width: 1100px; margin: 0 auto; padding: 16px; color: #1a1a1a; }
+.doc [data-cat="sebze"] { --c: #2e7d32; }
+.doc [data-cat="meyve"] { --c: #9c27b0; }
+.doc [data-cat="kasap"] { --c: #b71c1c; }
+.doc [data-cat="sarkuteri"] { --c: #8d6e00; }
+.doc h1 { font-size: 1.5rem; margin: 0; font-weight: 800; }
+.doc .dhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.doc .dhead p { margin: 4px 0 0; color: #666; font-size: 0.9rem; }
+.doc .dactions { display: flex; gap: 8px; flex-wrap: wrap; }
+.doc .dbtn {
+  border: 1px solid #cfd8dc; background: #fff; border-radius: 8px; padding: 8px 12px; font-weight: 600; font-size: 0.9rem;
+  cursor: pointer; text-decoration: none; color: #222; display: inline-flex; gap: 6px; align-items: center;
+}
+.doc .dchip { background: #1e6b3c; color: #fff; border-radius: 999px; font-size: 0.7rem; padding: 1px 7px; font-weight: 600; }
+.doc .dtag { background: #eceff1; color: #455a64; border-radius: 999px; font-size: 0.7rem; padding: 1px 7px; }
+.doc .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+@media (max-width: 640px) { .doc .dgrid { grid-template-columns: 1fr; } }
+.doc .dbox { background: #fff; border: 1px solid #d3d8de; border-radius: 12px; padding: 12px 14px; }
+.doc .dbox h3, .doc .dhow h3 { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; color: #455a64; }
+.doc .drow { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+.doc .drow:last-child { border-bottom: 0; }
+.doc .dhow { background: #fff4c7; border: 1px solid #f0d878; border-radius: 12px; padding: 12px 14px; margin-bottom: 14px; font-size: 0.85rem; line-height: 1.5; }
+.doc .dhow h3 { color: #7a5d00; }
+.doc .dhow p { margin: 0; }
+.doc .dgroup { background: #fff; border: 1px solid #d3d8de; border-radius: 12px; padding: 0 0 10px; margin-bottom: 14px; overflow: hidden; }
+.doc .dgroup h2 { background: var(--c, #455a64); color: #fff; margin: 0; padding: 10px 14px; font-size: 1.05rem; break-after: avoid; }
+.doc .dgroup h2 small { font-weight: 400; opacity: 0.85; font-size: 0.8rem; margin-left: 6px; }
+.doc .dcols { column-width: 300px; column-gap: 24px; padding: 8px 14px 0; }
+.doc .ditem { break-inside: avoid; display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px solid #f0f0f0; font-size: 0.85rem; }
+.doc .dcode { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 700; white-space: nowrap; }
+.doc .dcode .pre { color: #9aa0a6; font-weight: 500; }
+.doc mark { background: #ffe27a; color: #3b2f00; padding: 0 3px; border-radius: 3px; }
+.doc .dcode mark { margin-left: 2px; }
+.doc .dwarn { background: #fff4c7; border: 1px solid #f0d878; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 0.9rem; }
+.doc .dwarn a { font-weight: 700; text-decoration: underline; }
+.doc .dpdf { width: 100%; height: 80vh; border: 1px solid #cfd8dc; border-radius: 10px; background: #fff; }
+.doc .dnote { color: #777; font-size: 0.8rem; margin: 10px 0; }
+.doc .dnote a { text-decoration: underline; }
+.doc .dempty { color: #888; padding: 20px 0; }
+.doc .dmodal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 12px; z-index: 60; overflow: auto; }
+.doc .dmodal-box { background: #fff; border-radius: 14px; width: min(560px, 100%); padding: 14px; }
+.doc .dmodal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.doc .dmodal-head button { border: 0; background: transparent; font-size: 1.1rem; cursor: pointer; }
+.doc .dver { display: block; padding: 10px 12px; border-radius: 10px; border: 1px solid #e5e7eb; margin-bottom: 6px; text-decoration: none; color: inherit; }
+.doc .dver.on { border-color: #1e6b3c; background: #f1f8f3; }
+.doc .dver-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.doc .ddate { margin-left: auto; color: #888; font-size: 0.8rem; }
+.doc .dver-note { display: block; color: #555; font-size: 0.85rem; margin-top: 3px; }
+@media print {
+  @page { size: A4; margin: 12mm; }
+  body { background: #fff !important; }
+  .doc { max-width: none; padding: 0; }
+  .doc .no-print { display: none !important; }
+  .doc .dgroup, .doc .dbox, .doc .dhow { break-inside: auto; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

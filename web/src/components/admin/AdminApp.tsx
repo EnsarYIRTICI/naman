@@ -3,16 +3,18 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { ApiError, api, send } from "@/lib/api";
 import type { AdminData, Me } from "@/lib/types";
 import ChangesPanel from "./ChangesPanel";
+import DocPanel from "./DocPanel";
 import ImportPanel from "./ImportPanel";
 import LoginForm from "./LoginForm";
 import SectionEditor from "./SectionEditor";
 
-type Tab = "products" | "channels" | "barcodes" | "meal-cards" | "import" | "changes";
+type Tab = "products" | "channels" | "barcodes" | "meal-cards" | "doc" | "import" | "changes";
 const TABS: { key: Tab; label: string }[] = [
   { key: "products", label: "Ürünler" },
   { key: "channels", label: "Sipariş kanalları" },
   { key: "barcodes", label: "Barkodlar" },
   { key: "meal-cards", label: "Yemek kartları" },
+  { key: "doc", label: "Döküman" },
   { key: "import", label: "Veri yükle / yedek" },
   { key: "changes", label: "Geçmiş" },
 ];
@@ -74,7 +76,7 @@ export default function AdminApp() {
           <button key={t.key} type="button" onClick={() => setTab(t.key)}
             className={"rounded-full border px-3.5 py-1.5 text-sm font-semibold " + (tab === t.key ? "border-neutral-800 bg-neutral-800 text-white" : "border-neutral-300 bg-white")}>
             {t.label}
-            {data && t.key !== "import" && t.key !== "changes" && (
+            {data && t.key !== "import" && t.key !== "changes" && t.key !== "doc" && (
               <span className="ml-1.5 opacity-60">
                 {t.key === "products" ? data.products.length : t.key === "channels" ? data.channels.length : t.key === "barcodes" ? data.barcodes.length : data.mealCards.length}
               </span>
@@ -101,6 +103,7 @@ export default function AdminApp() {
         <SectionEditor section="meal-cards" singular="Yemek kartı" rows={data.mealCards} onChanged={load}
           columns={[{ prop: "name", label: "Kart" }, { prop: "posName", label: "Kasada seçilecek" }]} />
       )}
+      {data && tab === "doc" && <DocPanel dataVersion={data.version} />}
       {data && tab === "import" && <ImportPanel onChanged={load} />}
       {data && tab === "changes" && <ChangesPanel version={data.version} />}
     </div>

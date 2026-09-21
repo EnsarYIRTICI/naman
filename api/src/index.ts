@@ -4,7 +4,7 @@ import { buildApp } from "./app";
 import { Auth, normalizeUsername, validatePassword, validateUsername } from "./auth";
 import { loadConfig } from "./config";
 import { createPool, migrate } from "./db";
-import { seedIfNeeded } from "./seed";
+import { seedDocsIfNeeded, seedIfNeeded } from "./seed";
 
 async function main() {
   const config = loadConfig();
@@ -14,6 +14,7 @@ async function main() {
   const pool = createPool(config.DATABASE_URL);
   await migrate(pool);
   await seedIfNeeded(pool);
+  await seedDocsIfNeeded(pool);
 
   const auth = new Auth(pool, {
     idleMs: config.SESSION_IDLE_HOURS * 3600 * 1000,

@@ -179,6 +179,7 @@ export default function PublicApp() {
       <footer>
         Sürüm {APP_VERSION}
         {data?.meta.updatedAt && ` · Veri ${new Date(data.meta.updatedAt).toLocaleDateString("tr-TR")} tarihli`}
+        {" · "}<a href="/dokuman" style={{ textDecoration: "underline" }}>Kod dökümanı</a>
       </footer>
     </div>
   );
