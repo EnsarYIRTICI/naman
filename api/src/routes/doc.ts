@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { buildSnapshot, describeChanges, type Snapshot } from "../docdiff";
-import { loadAll, logChange, withTx } from "../data";
+import { lastChangeAt, loadAll, logChange, withTx } from "../data";
 import type { Deps } from "../deps";
 
 const getCurrent = async (q: {
@@ -30,18 +30,39 @@ export function publicDocRoutes(d: Deps): Router {
       publishedAt: string | null;
     }[];
     const current = await getCurrent(d.pool);
-    const want = typeof req.query.v === "string" ? req.query.v : "";
-    const sel =
-      versions.find((v) => v.label === want) ??
-      versions.find((v) => v.label === current) ??
-      versions[0];
+    const want = typeof req.query.v === "string" ? req.query.v.trim() : "";
     res.set("Cache-Control", "no-cache");
     // Arama sayfasının adresi (namdoc alan adında "/" dökümanın kendisi olduğu için mutlak adres gerekir)
     const homeUrl = d.config.APP_ORIGIN
       ? new URL(d.config.APP_ORIGIN).origin + "/"
       : "/";
+    const list = versions.map((v) => ({
+      label: v.label,
+      kind: v.kind,
+      note: v.note,
+      publishedAt: v.publishedAt,
+      current: v.label === current,
+    }));
+
+    // Sürüm istenmediyse (ya da bilinmeyen bir sürüm istendiyse) canlı veri gösterilir:
+    // yönetim panelinde yapılan her değişiklik dökümana anında yansır.
+    const sel = want ? versions.find((v) => v.label === want) : undefined;
     if (!sel) {
-      res.json({ versions: [], selected: null, homeUrl });
+      const [all, updatedAt] = await Promise.all([loadAll(d.pool), lastChangeAt(d.pool)]);
+      res.json({
+        homeUrl,
+        versions: list,
+        selected: {
+          label: "Canlı",
+          kind: "snapshot",
+          note: "",
+          publishedAt: updatedAt,
+          current: true,
+          live: true,
+          snapshot: buildSnapshot(all),
+          pdfUrl: null,
+        },
+      });
       return;
     }
     let snapshot: Snapshot | null = null;
@@ -56,19 +77,14 @@ export function publicDocRoutes(d: Deps): Router {
     }
     res.json({
       homeUrl,
-      versions: versions.map((v) => ({
-        label: v.label,
-        kind: v.kind,
-        note: v.note,
-        publishedAt: v.publishedAt,
-        current: v.label === current,
-      })),
+      versions: list,
       selected: {
         label: sel.label,
         kind: sel.kind,
         note: sel.note,
         publishedAt: sel.publishedAt,
-        current: sel.label === current,
+        current: false,
+        live: false,
         snapshot,
         pdfUrl:
           sel.kind === "pdf"

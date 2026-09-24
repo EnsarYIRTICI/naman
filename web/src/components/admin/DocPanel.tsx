@@ -49,7 +49,7 @@ export default function DocPanel({ dataVersion }: { dataVersion: number }) {
       const r = await send<{ label: string }>("POST", "/api/admin/doc/publish", { note, makeCurrent, force });
       dirty.current = false;
       setForce(false);
-      return `${r.label} yayınlandı${makeCurrent ? " ve kasiyerlere gösterilen (güncel) sürüm yapıldı" : ""}.`;
+      return `${r.label} yayınlandı${makeCurrent ? " ve son sürüm olarak işaretlendi" : ""}.`;
     });
 
   if (!info) return <div className="text-sm text-neutral-500">Yükleniyor...</div>;
@@ -61,15 +61,15 @@ export default function DocPanel({ dataVersion }: { dataVersion: number }) {
       <div className={card}>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div className="text-sm">
-            Kasiyerlerin gördüğü sürüm: <b data-testid="doc-current">{info.current ?? "—"}</b>
+            Kasiyerler dökümanda her zaman <b>güncel veriyi</b> görür. Son sürüm: <b data-testid="doc-current">{info.current ?? "—"}</b>
           </div>
           <a href="/dokuman" target="_blank" className="text-sm underline">Herkese açık dökümanı aç ↗</a>
         </div>
 
         <h3 className="m-0 mb-1 text-sm font-semibold">Yeni sürüm yayınla</h3>
         <p className="m-0 mb-3 text-xs text-neutral-500">
-          Yayınlanınca şu anki ürün, kanal ve yemek kartı verisinin bir kopyası yeni sürüm olarak saklanır. Sonradan veriyi değiştirseniz de bu sürüm aynı kalır;
-          istediğiniz zaman eski bir sürüme geri dönebilirsiniz.
+          Ürün, kanal ve yemek kartı değişiklikleri dökümana yayınlamadan da anında yansır. Yayınlamak, o anki listenin bir kopyasını
+          numaralı sürüm (arşiv) olarak saklar; kasiyerler sürüm listesinden eski sürümleri açıp karşılaştırabilir.
         </p>
 
         <div className="mb-3 rounded-md bg-neutral-50 p-2.5 text-sm" data-testid="doc-suggestion">
@@ -96,7 +96,7 @@ export default function DocPanel({ dataVersion }: { dataVersion: number }) {
         <div className="mb-3 space-y-1 text-sm">
           <label className="flex cursor-pointer items-center gap-2">
             <input type="checkbox" checked={makeCurrent} onChange={(e) => setMakeCurrent(e.target.checked)} />
-            Kasiyerlere bu sürüm gösterilsin (güncel sürüm yap)
+            Son sürüm olarak işaretle (arama sayfasındaki sürüm rozeti)
           </label>
           {!s.hasChanges && s.baseline !== null && (
             <label className="flex cursor-pointer items-center gap-2 text-neutral-600">
@@ -124,7 +124,7 @@ export default function DocPanel({ dataVersion }: { dataVersion: number }) {
               <tr key={v.id} data-label={v.label} className="border-t border-neutral-100 align-top">
                 <td className="whitespace-nowrap px-3 py-2">
                   <b className="font-mono">{v.label}</b>{" "}
-                  {v.current && <span className="rounded-full bg-green-700 px-2 py-0.5 text-[11px] font-semibold text-white">Güncel</span>}{" "}
+                  {v.current && <span className="rounded-full bg-green-700 px-2 py-0.5 text-[11px] font-semibold text-white">Son sürüm</span>}{" "}
                   {v.kind === "pdf" && <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-[11px] text-neutral-700">PDF arşiv</span>}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2 text-xs text-neutral-600">
@@ -145,13 +145,13 @@ export default function DocPanel({ dataVersion }: { dataVersion: number }) {
                     </>
                   ) : (
                     <>
-                      <a className={btn + " inline-block border-neutral-300"} target="_blank" href={v.current ? "/dokuman" : `/dokuman?v=${encodeURIComponent(v.label)}`}>Aç</a>{" "}
+                      <a className={btn + " inline-block border-neutral-300"} target="_blank" href={`/dokuman?v=${encodeURIComponent(v.label)}`}>Aç</a>{" "}
                       <button type="button" className={btn + " border-neutral-300"} onClick={() => { setEditId(v.id); setEditNote(v.note); }}>Notu düzenle</button>
                       {!v.current && (
                         <>
                           {" "}
                           <button type="button" disabled={busy} className={btn + " border-green-700 text-green-800"}
-                            onClick={() => run(async () => { await send("POST", "/api/admin/doc/current", { id: v.id }); return `${v.label} artık kasiyerlere gösterilen sürüm.`; })}>Güncel yap</button>{" "}
+                            onClick={() => run(async () => { await send("POST", "/api/admin/doc/current", { id: v.id }); return `${v.label} son sürüm olarak işaretlendi.`; })}>Son sürüm yap</button>{" "}
                           <button type="button" disabled={busy} className={btn + " border-red-300 text-red-600"}
                             onClick={() => { if (confirm(`${v.label} sürümü silinsin mi? Bu işlem geri alınamaz.`)) void run(async () => { await send("DELETE", `/api/admin/doc/versions/${v.id}`); return `${v.label} silindi.`; }); }}>Sil</button>
                         </>

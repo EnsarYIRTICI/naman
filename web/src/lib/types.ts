@@ -88,6 +88,8 @@ export interface DocSnapshot {
   mealCards: { name: string; posName: string }[];
 }
 export interface DocSelected extends DocVersionPublic {
+  /** true: yayınlanmış sürüm değil, veritabanındaki anlık veri */
+  live?: boolean;
   snapshot: DocSnapshot | null;
   pdfUrl: string | null;
 }

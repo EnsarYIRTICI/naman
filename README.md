@@ -35,12 +35,13 @@ docker compose logs -f api
 
 Eskiden PDF'i elle üretip `index.html`'e sürüm satırı ekleyerek yayınlıyordunuz. Artık döküman **veriden otomatik** oluşur:
 
-- **Yayınla:** `/admin` → **Döküman** sekmesi. "Yayınla" o anki ürün, kanal ve yemek kartı verisinin kopyasını yeni sürüm (`v7`, `v8` ...) olarak saklar. **Sürüm notu iki sürüm arasındaki farktan otomatik yazılır** ("Ürünler: 3 eklendi (...), 1 silindi (...)"), isterseniz düzenlersiniz. Veride değişiklik yoksa yayınlamaya izin vermez.
-- **Güncel sürüm:** Kasiyerlerin varsayılan olarak gördüğü sürümdür. Yeni sürümü yayınlarken "güncel yap" seçili gelir; hata yaptıysanız listeden eski bir sürümü **"Güncel yap"** ile geri alırsınız (yayınlanmış sürümler bir daha değişmez).
-- **Eski PDF'ler:** v1–v5 ilk kurulumda arşiv olarak yüklenir (birebir aynı dosyalar) ve sürüm listesinde "PDF arşiv" etiketiyle görünür. İlk açılışta mevcut veriden `v6` (ilk dijital sürüm) oluşturulur ve güncel yapılır.
-- **Doğrudan bağlantılar:** `https://namdoc.xenny.cloud/?v=v3` gibi eski adresler aynen çalışır. Eski sürüm açıkken üstte uyarı ve "Güncel sürüme dön" bağlantısı çıkar.
+- **Güncel liste (canlı):** `/dokuman` her zaman veritabanındaki anlık veriyi gösterir. Panelde bir ürünü, kanalı ya da yemek kartını değiştirdiğiniz anda dökümana yansır; yayınlamanız gerekmez. Açık sayfa, sekmeye dönüldüğünde ve dakikada bir kendini yeniler. Görünüm v5 PDF düzenindedir (renkli bölümler, Sebze/Meyve 3 sütun, Kasap marka alt başlıklarıyla).
+- **Sürüm yayınla (arşiv):** `/admin` → **Döküman** sekmesi. "Yayınla" o anki ürün, kanal ve yemek kartı verisinin kopyasını numaralı sürüm (`v7`, `v8` ...) olarak saklar. Yayınlanmış sürüm sonradan değişmez; `?v=v7` ile açılır. **Sürüm notu iki sürüm arasındaki farktan otomatik yazılır**, isterseniz düzenlersiniz. Veride değişiklik yoksa yayınlamaya izin vermez.
+- **Son sürüm:** Arama sayfasındaki "Kod Dökümanı" düğmesinde görünen sürüm rozetidir. Yayınlarken otomatik işaretlenir, listeden **"Son sürüm yap"** ile değiştirilebilir. Kasiyerlerin gördüğü listeyi etkilemez (kasiyerler hep güncel listeyi görür).
+- **Eski PDF'ler:** v1–v5 ilk kurulumda arşiv olarak yüklenir (birebir aynı dosyalar) ve sürüm listesinde "PDF arşiv" etiketiyle görünür. İlk açılışta mevcut veriden `v6` (ilk dijital sürüm) oluşturulur.
+- **Doğrudan bağlantılar:** `https://namdoc.xenny.cloud/?v=v3` gibi eski adresler aynen çalışır. Eski sürüm açıkken üstte uyarı ve "Güncel listeye dön" bağlantısı çıkar.
 - **PDF:** Yeni sürümler sayfa olarak gösterilir (telefonda okunur, metin aranabilir). PDF gerekirse sayfadaki **"Yazdır / PDF kaydet"** düğmesi tarayıcıdan A4 PDF üretir. (Sunucu tarafında ayrı PDF dosyası üretilmez.)
-- **Sınırlar:** Sürümlere barkodlar dahil değildir (eski PDF'te de yoktu). Sürüm silmek geri alınamaz; güncel sürüm silinemez. Arşiv PDF'ler sayfa içinde gömülü gösterilir, bazı telefonlarda yalnızca ilk sayfa görünebilir; "PDF'i yeni sekmede aç" bağlantısı vardır.
+- **Sınırlar:** Sürümlere barkodlar dahil değildir (eski PDF'te de yoktu). Sürüm silmek geri alınamaz; son sürüm olarak işaretli sürüm silinemez. Arşiv PDF'ler sayfa içinde gömülü gösterilir, bazı telefonlarda yalnızca ilk sayfa görünebilir; "PDF'i yeni sekmede aç" bağlantısı vardır.
 
 `nginx/namdoc.conf`: `namdoc.xenny.cloud` alan adını bu uygulamaya bağlar. Bu alan adında **sadece** döküman ve okuma API'si (`/api/public/`) açıktır; `/admin` ve girişli API'ler kapalıdır (404).
 
