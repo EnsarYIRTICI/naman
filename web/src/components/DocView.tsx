@@ -72,7 +72,7 @@ function Snapshot({ snap }: { snap: DocSnapshot }) {
         <section className="dbox">
           <h3>Satış kanalı kodları</h3>
           {snap.channels.map((c) => (
-            <div className="drow" key={c.name}><span>{c.name}</span><b>{c.code}</b></div>
+            <div className="drow" key={c.name}><span>{c.name}</span><b className="num">{c.code}</b></div>
           ))}
           {snap.channels.length === 0 && <div className="dempty">—</div>}
         </section>
@@ -81,10 +81,10 @@ function Snapshot({ snap }: { snap: DocSnapshot }) {
       <section className="dhow">
         <h3>Kod Vurgulama Sistemi — Nasıl Çalışır?</h3>
         <p>
-          Ürün kodu 7 hane. İlk 3 hane <span className="m">290</span> ise kasiyer bu öneki ve ardından gelen anlamsız
+          Ürün kodu 7 hane. İlk 3 hane <span className="num">290</span> ise kasiyer bu öneki ve ardından gelen anlamsız
           (baştaki) sıfırları atlayıp sadece geri kalan anlamlı haneleri girer. Bu haneler <mark>sarı</mark> ile
-          vurgulanmıştır. Örnekler: <span className="m">2900027 → 27</span> · <span className="m">2900063 → 63</span> ·{" "}
-          <span className="m">2905083 → 5083</span> (baştaki hane sıfır değilse tamamı girilir). Kod 290 ile
+          vurgulanmıştır. Örnekler: <span className="num">2900027 → 27</span> · <span className="num">2900063 → 63</span> ·{" "}
+          <span className="num">2905083 → 5083</span> (baştaki hane sıfır değilse tamamı girilir). Kod 290 ile
           başlamıyorsa (293, 282, 300 vb.) tam kod olduğu gibi girilir, vurgu yapılmaz.
         </p>
       </section>
