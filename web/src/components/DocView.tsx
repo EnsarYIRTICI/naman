@@ -111,6 +111,34 @@ function Snapshot({ snap }: { snap: DocSnapshot }) {
   );
 }
 
+/** Döküman yüklenirken gerçek düzenin iskeleti: iki bilgi kutusu, açıklama, bir kategori bölümü. */
+export function DocSkeleton() {
+  const col = [70, 55, 80, 62, 48, 75, 58, 66];
+  return (
+    <div className="dskel" aria-busy="true" aria-label="Liste yükleniyor">
+      <div className="dgrid">
+        {[7, 2].map((n, i) => (
+          <div className="dbox" key={i}>
+            <div className="sk sk-h" />
+            {Array.from({ length: n }, (_, j) => (
+              <div className="drow" key={j}><span className="sk" style={{ width: 30 + ((j * 17) % 30) + "%" }} /><span className="sk" style={{ width: "22%" }} /></div>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="sk sk-how" />
+      <div className="dgroup sk-group">
+        <div className="sk sk-bar" />
+        <div className="dcols" style={{ ["--cols" as string]: 3 }}>
+          {[0, 1, 2].flatMap((c) => col.map((w, j) => (
+            <div className="ditem" key={c + "-" + j}><span className="sk" style={{ width: ((w + c * 9) % 45) + 35 + "%" }} /><span className="sk sk-code" /></div>
+          )))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function DocView() {
   const params = useSearchParams();
   const v = params.get("v") ?? "";
@@ -178,8 +206,14 @@ export default function DocView() {
         </div>
       </div>
 
-      {err && <div className="dwarn">{err}</div>}
-      {!data && !err && <div className="dempty">Yükleniyor...</div>}
+      {err && (
+        <div className="derr" role="alert">
+          <b>Liste yüklenemedi</b>
+          <p>İnternet bağlantısını kontrol edip tekrar deneyin.</p>
+          <button type="button" className="dbtn dark" onClick={() => void load(false)}>Tekrar dene</button>
+        </div>
+      )}
+      {!data && !err && <DocSkeleton />}
 
       {sel && !live && (
         <div className="dwarn no-print" role="status">

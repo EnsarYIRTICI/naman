@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { splitCode } from "@/lib/codes";
 import { CATEGORIES, getCategory, normalize, splitMatch, type Cat } from "@/lib/text";
 import type { PublicData } from "@/lib/types";
@@ -33,6 +33,25 @@ function matchesName(name: string, toks: string[]): boolean {
   return toks.every((t) => n.includes(t));
 }
 
+/** Veri gelene kadar listenin yerini tutan iskelet: gerçek düzenle aynı ölçüde, ekran zıplamasın. */
+function ListSkeleton() {
+  const widths = [62, 48, 70, 55, 66, 44, 58, 73, 51, 60];
+  return (
+    <div className="skel" aria-busy="true" aria-label="Ürün listesi yükleniyor">
+      <div className="sk sk-info" />
+      <div className="sk sk-group" />
+      <ul>
+        {widths.map((w, i) => (
+          <li key={i} className="sk-row">
+            <span className="sk" style={{ width: w + "%" }} />
+            <span className="sk sk-code" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function PublicApp() {
   const [data, setData] = useState<PublicData | null>(null);
   const [error, setError] = useState("");
@@ -43,28 +62,30 @@ export default function PublicApp() {
   const [modal, setModal] = useState<{ name: string; code: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/api/public/data", { cache: "no-cache" });
-        if (!res.ok) throw new Error("HTTP " + res.status);
-        const d = (await res.json()) as PublicData;
-        setData(d);
-        try { localStorage.setItem(CACHE_KEY, JSON.stringify(d)); } catch {}
-      } catch (e) {
-        // Sunucuya ulaşılamıyorsa son kaydedilen veriyle çalış (kasada internet kesilebilir)
-        try {
-          const c = localStorage.getItem(CACHE_KEY);
-          if (c) {
-            setData(JSON.parse(c) as PublicData);
-            setOffline(true);
-            return;
-          }
-        } catch {}
-        setError("Veri yüklenemedi: " + (e as Error).message);
-      }
-    })();
+  const load = useCallback(async () => {
+    setError("");
+    // Önce cihazda kayıtlı son veriyi hemen göster (tekrar girişte bekleme olmasın), sonra sunucudan tazele
+    let cached: PublicData | null = null;
+    try {
+      const c = localStorage.getItem(CACHE_KEY);
+      if (c) cached = JSON.parse(c) as PublicData;
+    } catch {}
+    if (cached) setData((cur) => cur ?? cached);
+    try {
+      const res = await fetch("/api/public/data", { cache: "no-cache" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const d = (await res.json()) as PublicData;
+      setData(d);
+      setOffline(false);
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify(d)); } catch {}
+    } catch (e) {
+      // Sunucuya ulaşılamıyorsa kayıtlı veriyle çalışmaya devam et (kasada internet kesilebilir)
+      if (cached) setOffline(true);
+      else setError((e as Error).message);
+    }
   }, []);
+
+  useEffect(() => { void load(); }, [load]);
 
   const trimmed = raw.trim();
   const toks = useMemo(() => tokens(raw), [raw]);
@@ -148,7 +169,7 @@ export default function PublicApp() {
         </div>
         <div className="bar">
           <div className="count">
-            {error || !data ? error || "Yükleniyor..." : searching ? `${count} sonuç` : `${count} ${tab === "urunler" ? "ürün" : "barkod"}`}
+            {!data ? (error ? "Bağlantı yok" : <span className="sk sk-count" aria-hidden="true" />) : searching ? `${count} sonuç` : `${count} ${tab === "urunler" ? "ürün" : "barkod"}`}
           </div>
           <div className="seg" role="tablist">
             <button type="button" role="tab" aria-selected={tab === "urunler"} className={tab === "urunler" ? "on" : undefined} onClick={() => setTab("urunler")}>Ürünler</button>
@@ -156,6 +177,16 @@ export default function PublicApp() {
           </div>
         </div>
       </div>
+
+      {!data && !error && <ListSkeleton />}
+      {!data && error && (
+        <div className="load-err" role="alert">
+          <div className="load-err-icon" aria-hidden="true">📡</div>
+          <b>Ürün listesine ulaşılamadı</b>
+          <p>İnternet bağlantısını kontrol edip tekrar deneyin.</p>
+          <button type="button" onClick={() => void load()}>Tekrar dene</button>
+        </div>
+      )}
 
       {/* Bilgi alanı: arama yapılırken gizlenir, sonuçlar hemen görünsün */}
       {data && !searching && (

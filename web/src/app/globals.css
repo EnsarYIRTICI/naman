@@ -13,6 +13,15 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* ───────── Yükleme iskeleti (arama + döküman) ───────── */
+.sk {
+  display: block; height: 0.8em; border-radius: 4px;
+  background: linear-gradient(90deg, #e6e8ea 0%, #f1f2f3 40%, #e6e8ea 80%) 0 0 / 200% 100%;
+  animation: sk-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes sk-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@media (prefers-reduced-motion: reduce) { .sk { animation: none; } }
+
 /* ───────── Herkese açık arama sayfası (.pub) ───────── */
 .pub {
   --accent: #37474f;
@@ -107,6 +116,21 @@ body {
   border-radius: 6px; cursor: pointer; border: 1px solid var(--accent-border); font: inherit; text-align: left; color: inherit;
 }
 .pub .link { border: 0; background: none; color: var(--accent); font-weight: 700; text-decoration: underline; cursor: pointer; font: inherit; }
+.pub .sk-count { display: inline-block; width: 64px; height: 0.75em; vertical-align: middle; }
+.pub .skel .sk-info { height: 36px; border-radius: 8px; margin: 2px 0 8px; }
+.pub .skel .sk-group { height: 28px; border-radius: 6px; margin: 10px 0 4px; background-image: linear-gradient(90deg, #d9dee2 0%, #e6e9ec 40%, #d9dee2 80%); }
+.pub .skel li.sk-row { border-left-color: #dfe3e6; padding: 13px 12px; }
+.pub .skel .sk-row .sk { height: 0.85em; }
+.pub .skel .sk-code { width: 72px; flex: 0 0 auto; }
+.pub .load-err {
+  text-align: center; background: #fff; border: 1px solid var(--accent-border); border-radius: 10px;
+  padding: 24px 16px; margin-top: 8px;
+}
+.pub .load-err-icon { font-size: 1.8rem; margin-bottom: 6px; }
+.pub .load-err p { margin: 6px 0 14px; color: #666; font-size: 0.88rem; }
+.pub .load-err button {
+  padding: 10px 22px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font-weight: 700; cursor: pointer;
+}
 .pub footer { margin: 24px 0 8px; text-align: center; font-size: 0.75rem; color: #888; }
 .pub .modal {
   position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center;
@@ -186,6 +210,18 @@ body {
   .doc .dgroup { padding: 10px 12px; }
 }
 
+.doc .dskel .sk { height: 0.8em; }
+.doc .dskel .sk-h { width: 38%; height: 0.8em; margin: 2px 0 12px; }
+.doc .dskel .drow { padding: 5px 0; }
+.doc .dskel .sk-how { height: 86px; border-radius: 10px; margin-bottom: 16px; background-image: linear-gradient(90deg, #f6ecc4 0%, #fbf4da 40%, #f6ecc4 80%); }
+.doc .dskel .sk-group { --c-soft: #f4f5f6; --c-line: #e3e6e8; }
+.doc .dskel .sk-bar { height: 40px; border-radius: 6px; margin-bottom: 12px; }
+.doc .dskel .ditem { padding: 4px 0; }
+.doc .dskel .sk-code { width: 56px; flex: 0 0 auto; }
+.doc .derr {
+  text-align: center; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 28px 16px; margin-bottom: 16px;
+}
+.doc .derr p { margin: 6px 0 14px; color: #666; font-size: 0.9rem; }
 .doc .dwarn { background: #fff4c7; border: 1px solid #f0d878; border-radius: 10px; padding: 10px 14px; margin-bottom: 12px; font-size: 0.9rem; }
 .doc .dwarn a { font-weight: 700; text-decoration: underline; }
 .doc .dpdf { width: 100%; height: 80vh; border: 1px solid #cfd8dc; border-radius: 10px; background: #fff; }
