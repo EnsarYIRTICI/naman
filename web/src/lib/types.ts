@@ -3,6 +3,8 @@ export interface Product {
   code: string;
   name: string;
   group: string;
+  /** false: gizli (sistemde kayıtlı ama kasa sayfasında ve dökümanda görünmez) */
+  visible: boolean;
 }
 export interface Channel {
   id: number;
@@ -67,7 +69,7 @@ export interface SectionPreview {
 }
 export interface ImportResponse {
   dry: boolean;
-  mode: "merge" | "replace";
+  mode: "merge" | "replace" | "add";
   applied?: boolean;
   version?: number;
   notes: string[];

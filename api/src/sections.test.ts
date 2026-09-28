@@ -55,6 +55,35 @@ describe("diffSection", () => {
   });
 });
 
+describe("görünürlük ve sadece-yeniler modu", () => {
+  const ex = [
+    { code: "1", name: "A", group: "G", visible: "0" },
+    { code: "2", name: "B", group: "G", visible: "1" },
+  ];
+  it("görünürlük gönderilmezse karşılaştırılmaz ve korunur (CSV birleştir gizli ürünü açmaz)", () => {
+    const d = diffSection(products, ex, [{ code: "1", name: "A", group: "G" }, { code: "2", name: "B2", group: "G" }], "merge");
+    expect(d.unchanged).toBe(1);
+    expect(d.updated).toEqual([{ before: ex[1], after: { code: "2", name: "B2", group: "G", visible: "1" } }]);
+  });
+  it("görünürlük gönderilirse değişiklik sayılır", () => {
+    const d = diffSection(products, ex, [{ code: "1", name: "A", group: "G", visible: "1" }], "merge");
+    expect(d.updated.length).toBe(1);
+  });
+  it("add: var olanlara dokunmaz, sadece yeni kodu ekler", () => {
+    const d = diffSection(products, ex, [{ code: "1", name: "FARKLI", group: "X" }, { code: "9", name: "Yeni", group: "G", visible: "0" }], "add");
+    expect([d.added.length, d.updated.length, d.removed.length, d.unchanged]).toEqual([1, 0, 0, 1]);
+  });
+  it("normalizeItem görünürlüğü evet/hayır, true/false, 1/0 olarak okur; yoksa alanı eklemez", () => {
+    expect(normalizeItem(products, { code: "1", name: "A", group: "G", visible: false }).item?.visible).toBe("0");
+    expect(normalizeItem(products, { code: "1", name: "A", group: "G", görünür: "Evet" }).item?.visible).toBe("1");
+    expect(normalizeItem(products, { code: "1", name: "A", group: "G" }).item).toEqual({ code: "1", name: "A", group: "G" });
+    expect(normalizeItem(products, { code: "1", name: "A", group: "G", visible: "belki" }).errors.length).toBe(1);
+  });
+  it("ad içindeki fazla boşlukları tek boşluğa indirir", () => {
+    expect(normalizeItem(products, { code: "1", name: " MN. TAZE  ENGINAR AD ", group: "G" }).item?.name).toBe("MN. TAZE ENGINAR AD");
+  });
+});
+
 describe("normalizeItem", () => {
   it("eksik alanı bildirir", () => {
     expect(normalizeItem(products, { code: "1" }).errors.length).toBe(2);

@@ -1,4 +1,4 @@
-# Naman v3.1 — Kasa stok kodu arama + yönetim paneli + sürümlü kod dökümanı
+# Naman v3.2 — Kasa stok kodu arama + yönetim paneli + sürümlü kod dökümanı
 
 Kasiyerler için ürün/kod arama sayfası (`/`, giriş gerektirmez), kodları düzenleyip toplu veri yükleyebildiğiniz yönetim paneli (`/admin`, giriş gerekir) ve eski **namdoc** yerine geçen sürümlü "Kasa Ürün Kodları" dökümanı (`/dokuman`, giriş gerektirmez).
 
@@ -17,14 +17,20 @@ docker compose up -d --build
 docker compose logs -f api
 ```
 
-`nginx/naman.conf` dosyasını host nginx'inize uygulayın (`nginx -t && systemctl reload nginx`). İlk açılışta veritabanı **eski naman verisiyle** (158 ürün, kanal kodları, barkodlar, yemek kartları) otomatik dolar.
+`nginx/naman.conf` dosyasını host nginx'inize uygulayın (`nginx -t && systemctl reload nginx`). Yeni kurulumda veritabanı **boş** başlar (hazır/seed veri yoktur); ürünleri panelden **Dosyadan ürün ekle** ile ya da JSON yedeği **Veri yükle** ile yükleyin.
 
 İlk yönetici `.env`'deki `ADMIN_USERNAME` / `ADMIN_PASSWORD` ile oluşur (sonra `ADMIN_PASSWORD` satırını silin). Yönetim: `https://naman.xenny.cloud/admin`
 
 ## Yönetim paneli (/admin)
 
 - **Ürünler / Kanallar / Barkodlar / Yemek kartları:** ekle, düzenle, sil. Yapılan her değişiklik kasa sayfasına anında yansır.
-- **Veri yükle:** `.json` (eski `products.json` biçimi ya da panelden indirilen yedek) veya ürün listesi için `.csv`. Önce **önizleme** gösterilir (kaç kayıt eklenecek/güncellenecek/silinecek); onaylamadan hiçbir şey değişmez. Dosyada hata varsa (tekrarlanan kod, boş alan vb.) hiçbir şey yüklenmez ve nedeni listelenir.
+- **Görünür / gizli ürün:** Ürünler listesinde her ürünün **Durum** düğmesi (Görünür/Gizli) vardır; satırları işaretleyip toplu gizleyip gösterebilirsiniz. Gizli ürün sistemde kayıtlı kalır ama **kasa sayfasında ve dökümanda çıkmaz** (mevsimi geçen, şu an satılmayan ürünler). Üstteki Tümü / Görünür / Gizli düğmeleriyle filtrelenir.
+- **Dosyadan ürün ekle:** Manav sipariş evrakı gibi bir listeyi yükleyin: **Excel (.xlsx)**, **CSV/TXT** ya da **JSON**. `Stok Kodu` + `Stok Adı` (ya da `Kod` + `Ürün Adı`) sütunları, `Ürün Grubu: …` satırları ve `Grup` sütunu tanınır. **Sistemde olmayan kodlar eklenir, olanlara dokunulmaz.** Eklemeden önce:
+  - dosyadaki her grubun sistemde hangi gruba gideceğini seçersiniz (öneri: o gruptan sistemde zaten olan ürünlerin grubu, örn. "Meyve Siparişi" → "Egzotik Meyveler");
+  - yeni ürünlerin görünürlüğünü seçersiniz: *siparişi/satışı olanlar görünür* (dosyada Sipariş/Satış/Miktar sütunu varsa), *hepsi görünür* ya da *hepsi gizli*; ürün ürün de değiştirilebilir;
+  - sistemde gizli olup dosyada siparişi/satışı olan ürünler için "Bunları görünür yap" önerilir.
+  - Eski `.xls` okunmaz (Excel'de "Farklı Kaydet → .xlsx"); PDF'ten ürün okunmaz.
+- **Veri yükle:** (toplu düzeltme / yedekten geri yükleme) `.json` (eski `products.json` biçimi ya da panelden indirilen yedek) veya ürün listesi için `.csv`. Önce **önizleme** gösterilir (kaç kayıt eklenecek/güncellenecek/silinecek); onaylamadan hiçbir şey değişmez. Dosyada hata varsa (tekrarlanan kod, boş alan vb.) hiçbir şey yüklenmez ve nedeni listelenir.
   - **Birleştir:** yeni kayıtlar eklenir, var olanlar güncellenir, hiçbir şey silinmez.
   - **Değiştir:** dosyada olmayan kayıtlar silinir; liste dosyadaki gibi olur.
 - **CSV biçimi:** `Kod;Ürün Adı;Grup` (Excel'den "CSV olarak kaydet"; UTF-8 ya da Türkçe Windows kodlaması otomatik anlaşılır; ayraç `;` `,` veya sekme).
@@ -38,9 +44,14 @@ Eskiden PDF'i elle üretip `index.html`'e sürüm satırı ekleyerek yayınlıyo
 - **Güncel liste (canlı):** `/dokuman` her zaman veritabanındaki anlık veriyi gösterir. Panelde bir ürünü, kanalı ya da yemek kartını değiştirdiğiniz anda dökümana yansır; yayınlamanız gerekmez. Açık sayfa, sekmeye dönüldüğünde ve dakikada bir kendini yeniler. Görünüm v5 PDF düzenindedir (renkli bölümler, Sebze/Meyve 3 sütun, Kasap marka alt başlıklarıyla).
 - **Sürüm yayınla (arşiv):** `/admin` → **Döküman** sekmesi. "Yayınla" o anki ürün, kanal ve yemek kartı verisinin kopyasını numaralı sürüm (`v7`, `v8` ...) olarak saklar. Yayınlanmış sürüm sonradan değişmez; `?v=v7` ile açılır. **Sürüm notu iki sürüm arasındaki farktan otomatik yazılır**, isterseniz düzenlersiniz. Veride değişiklik yoksa yayınlamaya izin vermez.
 - **Son sürüm:** Arama sayfasındaki "Kod Dökümanı" düğmesinde görünen sürüm rozetidir. Yayınlarken otomatik işaretlenir, listeden **"Son sürüm yap"** ile değiştirilebilir. Kasiyerlerin gördüğü listeyi etkilemez (kasiyerler hep güncel listeyi görür).
-- **Eski PDF'ler:** v1–v5 ilk kurulumda arşiv olarak yüklenir (birebir aynı dosyalar) ve sürüm listesinde "PDF arşiv" etiketiyle görünür. İlk açılışta mevcut veriden `v6` (ilk dijital sürüm) oluşturulur.
+- **Eski PDF'ler:** v1–v5 arşiv PDF'leri mevcut kurulumun veritabanında durur ve sürüm listesinde "PDF arşiv" etiketiyle görünür. (v3.2'den itibaren depoda seed/arşiv dosyası yoktur; yeni kurulumda sürüm listesi boş başlar, ilk "Yayınla" ile `v1` oluşur.)
+- **Gizli ürünler** dökümana girmez; bir ürünü gizlemek sonraki sürüm notunda "silindi" olarak görünür.
 - **Doğrudan bağlantılar:** `https://namdoc.xenny.cloud/?v=v3` gibi eski adresler aynen çalışır. Eski sürüm açıkken üstte uyarı ve "Güncel listeye dön" bağlantısı çıkar.
-- **PDF:** Yeni sürümler sayfa olarak gösterilir (telefonda okunur, metin aranabilir). PDF gerekirse sayfadaki **"Yazdır / PDF kaydet"** düğmesi tarayıcıdan A4 PDF üretir. (Sunucu tarafında ayrı PDF dosyası üretilmez.)
+- **PDF / yazdırma düzeni:** Yeni sürümler sayfa olarak gösterilir (telefonda okunur, metin aranabilir). Sayfadaki **"Yazdır / PDF"** düğmesi bir düzen penceresi açar:
+  - **2 / 3 / 4 sayfa:** liste o sayfa sayısına sığacak **en büyük yazı boyutuyla** (6–14 pt) ve uygun sütun sayısıyla hazırlanır. Her seçeneğin yanında hangi yazı boyutuna denk geldiği yazar. Ürün sayısı değiştikçe yazı boyutu da değişir.
+  - **Özel:** yazı boyutu ve sütun sayısını (2/3/4) siz seçersiniz; tahmini sayfa sayısı anında görünür.
+  - Seçenekler: yemek kartı / kanal / "kod nasıl girilir" kutusu, ad başındaki "MNV./MN." önekini yazmama (daha az satır kayması), her bölümün yeni sayfadan başlaması.
+  - Sayfa sayısı, yazdırılacak düzen A4 genişliğinde ölçülerek hesaplanır (yaklaşık; ±1). Tarayıcının yazdırma ekranında kağıt A4, ölçek %100/Varsayılan olmalı. Seçim o cihazda hatırlanır. Tarayıcının kendi Ctrl+P'si de aynı düzeni kullanır.
 - **Sınırlar:** Sürümlere barkodlar dahil değildir (eski PDF'te de yoktu). Sürüm silmek geri alınamaz; son sürüm olarak işaretli sürüm silinemez. Arşiv PDF'ler sayfa içinde gömülü gösterilir, bazı telefonlarda yalnızca ilk sayfa görünebilir; "PDF'i yeni sekmede aç" bağlantısı vardır.
 
 `nginx/namdoc.conf`: `namdoc.xenny.cloud` alan adını bu uygulamaya bağlar. Bu alan adında **sadece** döküman ve okuma API'si (`/api/public/`) açıktır; `/admin` ve girişli API'ler kapalıdır (404).
@@ -63,13 +74,13 @@ Rol ayrımı yoktur: giriş yapan herkes her şeyi düzenleyebilir.
 - Sayfa `noindex` içerir (arama motorlarında görünmez).
 - Kategori (Sebze/Meyve/Kasap/Şarküteri) grup adından belirlenir: "Kasap - ..." → Kasap, adında "meyve" geçen → Meyve, vb.
 
-## Güncelleme (v3 → v3.1)
+## Güncelleme (v3.1 → v3.2)
 
 ```bash
 cd /opt/naman && git pull && docker compose up -d --build
 ```
 
-Veritabanı şeması (döküman tablosu) ve arşiv PDF'ler ilk açılışta otomatik eklenir; mevcut ürün verinize dokunulmaz.
+İlk açılışta `003_product_visible` migrasyonu çalışır: ürünlere görünürlük alanı eklenir, **mevcut tüm ürünler görünür** kalır. Ürün, döküman ve arşiv PDF verinize dokunulmaz. Seed yapısı (`api/seed/`, `seed.ts`) kaldırıldı; mevcut veritabanını etkilemez.
 
 ## Yedek (sunucu)
 

@@ -4,13 +4,19 @@ import type { PoolClient } from "pg";
 
 export type SectionKey = "products" | "channels" | "barcodes" | "mealCards";
 export type Item = Record<string, string>;
-export type Mode = "merge" | "replace";
+/** merge: ekle + güncelle · replace: dosyadaki gibi yap (olmayanı sil) · add: sadece yeni kodları ekle, var olanlara dokunma */
+export type Mode = "merge" | "replace" | "add";
 
 export interface PropCfg {
   prop: string;
   col: string;
   label: string;
   max: number;
+  /** bool: veritabanında boolean, Item içinde "1"/"0" */
+  kind?: "text" | "bool";
+  /** Zorunlu değil: gönderilmezse eklemede varsayılan kullanılır, güncellemede mevcut değer korunur */
+  optional?: boolean;
+  def?: string;
 }
 export interface SectionCfg {
   key: SectionKey;
@@ -29,6 +35,7 @@ export const SECTIONS: SectionCfg[] = [
       { prop: "code", col: "code", label: "Kod", max: 40 },
       { prop: "name", col: "name", label: "Ürün adı", max: 200 },
       { prop: "group", col: "group_name", label: "Grup", max: 100 },
+      { prop: "visible", col: "visible", label: "Görünür", max: 1, kind: "bool", optional: true, def: "1" },
     ],
   },
   {
@@ -56,14 +63,37 @@ export const SECTIONS: SectionCfg[] = [
 
 // Eski naman products.json biçimi (c/n/g, kanal/kod, actions, ad/kod) ve yeni biçim birlikte kabul edilir.
 const ALIASES: Record<SectionKey, { arrayKeys: string[]; props: Record<string, string[]> }> = {
-  products: { arrayKeys: ["products"], props: { code: ["code", "c", "kod"], name: ["name", "n", "ad"], group: ["group", "g", "grup"] } },
+  products: { arrayKeys: ["products"], props: { code: ["code", "c", "kod"], name: ["name", "n", "ad"], group: ["group", "g", "grup"], visible: ["visible", "gorunur", "görünür"] } },
   channels: { arrayKeys: ["channels"], props: { name: ["name", "kanal", "ad"], code: ["code", "kod"] } },
   barcodes: { arrayKeys: ["barcodes", "actions"], props: { name: ["name", "ad"], code: ["code", "kod"] } },
   mealCards: { arrayKeys: ["mealCards", "meal_cards"], props: { name: ["name", "ad"], posName: ["posName", "pos", "pos_name"] } },
 };
 
 export const keyCol = (cfg: SectionCfg): string => cfg.props.find((p) => p.prop === cfg.keyProp)!.col;
-export const labelOf = (cfg: SectionCfg, it: Item): string => cfg.props.map((p) => it[p.prop] ?? "").join(" · ");
+export const textProps = (cfg: SectionCfg): PropCfg[] => cfg.props.filter((p) => p.kind !== "bool");
+export const labelOf = (cfg: SectionCfg, it: Item): string => textProps(cfg).map((p) => it[p.prop] ?? "").join(" · ");
+
+const TRUE_WORDS = new Set(["1", "true", "evet", "e", "yes", "var", "görünür", "gorunur", "açık", "acik"]);
+const FALSE_WORDS = new Set(["0", "false", "hayır", "hayir", "h", "no", "yok", "gizli", "kapalı", "kapali"]);
+/** Boolean alanı "1"/"0"a çevirir; tanınmıyorsa null. */
+export function parseBool(v: unknown): "1" | "0" | null {
+  if (typeof v === "boolean") return v ? "1" : "0";
+  if (typeof v === "number") return v === 1 ? "1" : v === 0 ? "0" : null;
+  const s = String(v ?? "").trim().toLocaleLowerCase("tr-TR");
+  if (TRUE_WORDS.has(s)) return "1";
+  if (FALSE_WORDS.has(s)) return "0";
+  return null;
+}
+
+/** Veritabanı satırını Item'a çevirir (boolean → "1"/"0"). */
+export function rowToItem(cfg: SectionCfg, row: Record<string, unknown>): Item {
+  const out: Item = {};
+  for (const p of cfg.props) {
+    const v = row[p.prop];
+    out[p.prop] = p.kind === "bool" ? (v === true || v === "1" || v === 1 || v === "true" ? "1" : "0") : String(v ?? "");
+  }
+  return out;
+}
 
 /** Tek kaydı doğrular/normalize eder. Hata varsa item yok, errors dolu. */
 export function normalizeItem(cfg: SectionCfg, raw: unknown): { item?: Item; errors: string[] } {
@@ -79,7 +109,17 @@ export function normalizeItem(cfg: SectionCfg, raw: unknown): { item?: Item; err
         break;
       }
     }
-    const s = v === undefined ? "" : String(v).trim();
+    if (p.kind === "bool") {
+      if (v === undefined || (typeof v === "string" && v.trim() === "")) {
+        if (!p.optional) errors.push(`"${p.label}" boş olamaz`);
+        continue;
+      }
+      const b = parseBool(v);
+      if (b === null) errors.push(`"${p.label}" evet/hayır (1/0) olmalı`);
+      else item[p.prop] = b;
+      continue;
+    }
+    const s = v === undefined ? "" : String(v).trim().replace(/\s+/g, " ");
     if (!s) errors.push(`"${p.label}" boş olamaz`);
     else if (s.length > p.max) errors.push(`"${p.label}" en fazla ${p.max} karakter olmalı`);
     item[p.prop] = s;
@@ -147,7 +187,11 @@ export interface Diff {
   unchanged: number;
 }
 
-/** Mevcut kayıtlar ile yüklenenleri anahtara göre karşılaştırır. replace modunda yüklenmeyenler silinir. */
+/**
+ * Mevcut kayıtlar ile yüklenenleri anahtara göre karşılaştırır. replace modunda yüklenmeyenler silinir.
+ * add modunda var olan kayıtlara hiç dokunulmaz (unchanged = zaten var olanlar).
+ * Yüklenen kayıtta olmayan isteğe bağlı alanlar (örn. görünürlük) karşılaştırılmaz ve korunur.
+ */
 export function diffSection(cfg: SectionCfg, existing: Item[], incoming: Item[], mode: Mode): Diff {
   const byKey = new Map(existing.map((e) => [e[cfg.keyProp]!, e]));
   const inKeys = new Set<string>();
@@ -157,14 +201,18 @@ export function diffSection(cfg: SectionCfg, existing: Item[], incoming: Item[],
     inKeys.add(k);
     const cur = byKey.get(k);
     if (!cur) diff.added.push(it);
-    else if (cfg.props.some((p) => cur[p.prop] !== it[p.prop])) diff.updated.push({ before: cur, after: it });
-    else diff.unchanged++;
+    else if (mode !== "add" && cfg.props.some((p) => it[p.prop] !== undefined && cur[p.prop] !== it[p.prop])) {
+      diff.updated.push({ before: cur, after: { ...cur, ...it } });
+    } else diff.unchanged++;
   }
   if (mode === "replace") diff.removed = existing.filter((e) => !inKeys.has(e[cfg.keyProp]!));
   return diff;
 }
 
 export const diffCount = (d: Diff): number => d.added.length + d.updated.length + d.removed.length;
+
+/** Eklenecek kaydın sütun değerleri: gönderilmeyen isteğe bağlı alanlar varsayılanı alır. */
+export const withDefaults = (cfg: SectionCfg, it: Item): string[] => cfg.props.map((p) => it[p.prop] ?? p.def ?? "");
 
 /** Farkı veritabanına uygular (çağıran transaction içinde olmalı). */
 export async function applyDiff(client: PoolClient, cfg: SectionCfg, diff: Diff, incoming: Item[], mode: Mode): Promise<void> {
@@ -185,7 +233,7 @@ export async function applyDiff(client: PoolClient, cfg: SectionCfg, diff: Diff,
     await client.query(
       `INSERT INTO ${cfg.table} (${cols.join(", ")}, sort_order)
        VALUES (${ph}, (SELECT COALESCE(MAX(sort_order), 0) + 1 FROM ${cfg.table}))`,
-      cfg.props.map((p) => it[p.prop]),
+      withDefaults(cfg, it),
     );
   }
   if (mode === "replace" && incoming.length) {

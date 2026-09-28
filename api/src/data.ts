@@ -2,23 +2,25 @@ import type { Pool, PoolClient } from "pg";
 import { SECTIONS, type SectionCfg, type SectionKey } from "./sections";
 
 type Q = Pool | PoolClient;
-export type Row = Record<string, string | number>;
+export type Row = Record<string, string | number | boolean>;
 export type AllData = Record<SectionKey, Row[]>;
 
-function selectSql(cfg: SectionCfg): string {
+/** visibleOnly: kasiyer sayfası için gizli ürünler hariç */
+function selectSql(cfg: SectionCfg, visibleOnly = false): string {
   const cols = cfg.props.map((p) => `t.${p.col} AS "${p.prop}"`).join(", ");
   if (cfg.key === "products") {
     // Grupların sırası: gruptaki ilk ürünün sırasına göre; grup içinde kendi sırası
     return `SELECT t.id, ${cols} FROM products t
               JOIN (SELECT group_name, MIN(sort_order) AS r FROM products GROUP BY group_name) g ON g.group_name = t.group_name
+             ${visibleOnly ? "WHERE t.visible" : ""}
              ORDER BY g.r, t.sort_order, t.id`;
   }
   return `SELECT t.id, ${cols} FROM ${cfg.table} t ORDER BY t.sort_order, t.id`;
 }
 
-export async function loadAll(q: Q): Promise<AllData> {
+export async function loadAll(q: Q, opts: { visibleOnly?: boolean } = {}): Promise<AllData> {
   const out = {} as AllData;
-  for (const cfg of SECTIONS) out[cfg.key] = (await q.query(selectSql(cfg))).rows as Row[];
+  for (const cfg of SECTIONS) out[cfg.key] = (await q.query(selectSql(cfg, opts.visibleOnly))).rows as Row[];
   return out;
 }
 

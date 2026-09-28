@@ -62,6 +62,13 @@ const MIGRATIONS: { id: string; sql: string }[] = [
       );
     `,
   },
+  {
+    id: "003_product_visible",
+    sql: `
+      -- Görünmeyen (mevsimi geçmiş / kullanılmayan) ürünler sistemde kalır ama kasa sayfasında ve dökümanda çıkmaz
+      ALTER TABLE products ADD COLUMN visible BOOLEAN NOT NULL DEFAULT true;
+    `,
+  },
 ];
 
 export async function migrate(pool: Pool): Promise<void> {

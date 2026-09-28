@@ -9,7 +9,7 @@ export function decodeText(buf: ArrayBuffer): string {
   return text.replace(/^\uFEFF/, "");
 }
 
-function parseRows(text: string, delim: string): string[][] {
+export function parseRows(text: string, delim: string): string[][] {
   const rows: string[][] = [];
   let row: string[] = [];
   let cur = "";
@@ -34,7 +34,7 @@ function parseRows(text: string, delim: string): string[][] {
   return rows;
 }
 
-const norm = (s: string) => s.trim().toLocaleLowerCase("tr-TR").replace(/ı/g, "i").replace(/ş/g, "s").replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ö/g, "o").replace(/ç/g, "c");
+export const norm = (s: string) => s.trim().toLocaleLowerCase("tr-TR").replace(/ı/g, "i").replace(/ş/g, "s").replace(/ğ/g, "g").replace(/ü/g, "u").replace(/ö/g, "o").replace(/ç/g, "c");
 const H_CODE = ["kod", "code", "urun kodu", "stok kodu"];
 const H_NAME = ["ad", "urun", "urun adi", "name", "isim"];
 const H_GROUP = ["grup", "group", "kategori"];

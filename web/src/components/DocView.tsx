@@ -1,52 +1,16 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { splitCode } from "@/lib/codes";
-import { getCategory, type Cat } from "@/lib/text";
+import { buildSections } from "@/lib/docsections";
+import { DEFAULT_SETTINGS, fitToPages, loadSettings, type Layout, type PrintSettings } from "@/lib/printfit";
 import type { DocPublic, DocSnapshot } from "@/lib/types";
+import { PrintDialog, PrintDoc, applyLayout, measurePages, type Presets } from "./PrintDoc";
+
+const PRINT_KEY = "naman:print";
 
 const fmtDate = (s: string | null) =>
   s ? new Date(s).toLocaleDateString("tr-TR") : "";
-
-type P = DocSnapshot["products"][number];
-interface Section {
-  key: string;
-  title: string;
-  cat: Cat;
-  count: number;
-  /** Kasap gibi alt gruplara ayrılan bölümlerde alt başlık, diğerlerinde null */
-  parts: { sub: string | null; items: P[] }[];
-  cols: number;
-}
-
-/**
- * Ürünleri v5 PDF'teki gibi bölümlere ayırır: "Kasap - Şen Piliç", "Kasap - Banvit" ... tek "Kasap"
- * bölümünde marka alt başlıklarıyla toplanır; diğer gruplar kendi bölümüdür.
- */
-function buildSections(products: P[]): Section[] {
-  const out: Section[] = [];
-  const byKey = new Map<string, Section>();
-  for (const p of products) {
-    const cat = getCategory(p.group);
-    const dash = p.group.indexOf(" - ");
-    const merged = cat === "kasap" && dash > 0;
-    const key = merged ? "kasap" : "g:" + p.group;
-    let s = byKey.get(key);
-    if (!s) {
-      s = { key, title: merged ? p.group.slice(0, dash) : p.group, cat, count: 0, parts: [], cols: 2 };
-      byKey.set(key, s);
-      out.push(s);
-    }
-    const sub = merged ? p.group.slice(dash + 3) : null;
-    let part = s.parts.find((x) => x.sub === sub);
-    if (!part) { part = { sub, items: [] }; s.parts.push(part); }
-    part.items.push(p);
-    s.count++;
-  }
-  // Uzun, alt başlıksız listeler 3 sütun (Sebze, Meyve); kısa olanlar ve alt başlıklılar 2 sütun
-  for (const s of out) s.cols = s.parts.length === 1 && s.count >= 30 ? 3 : 2;
-  return out;
-}
 
 function Code({ code }: { code: string }) {
   const { prefix, typed } = splitCode(code);
@@ -145,6 +109,20 @@ export default function DocView() {
   const [data, setData] = useState<DocPublic | null>(null);
   const [err, setErr] = useState("");
   const [dlg, setDlg] = useState(false);
+  const [pOpen, setPOpen] = useState(false);
+  const [ps, setPs] = useState<PrintSettings>(DEFAULT_SETTINGS);
+  const [layout, setLayout] = useState<Layout | null>(null);
+  const [presets, setPresets] = useState<Presets | null>(null);
+  const printRef = useRef<HTMLDivElement>(null);
+
+  // Yazdırma ayarı cihazda hatırlanır
+  useEffect(() => {
+    try { setPs(loadSettings(localStorage.getItem(PRINT_KEY))); } catch {}
+  }, []);
+  const changePs = (n: PrintSettings) => {
+    setPs(n);
+    try { localStorage.setItem(PRINT_KEY, JSON.stringify(n)); } catch {}
+  };
 
   const load = useCallback(async (quiet: boolean) => {
     if (!quiet) { setData(null); setErr(""); }
@@ -163,6 +141,24 @@ export default function DocView() {
 
   const sel = data?.selected ?? null;
   const live = !!sel?.live;
+  const printSnap = sel?.kind === "snapshot" ? sel.snapshot : null;
+
+  // Yazdırılacak A4 düzenini ölç: seçilen sayfa sayısına sığan yazı boyutu (ya da elle seçilen) + sayfa tahmini
+  useLayoutEffect(() => {
+    const el = printRef.current;
+    if (!el || !printSnap) {
+      setLayout(null);
+      return;
+    }
+    const m = (font: number, cols: number) => measurePages(el, font, cols);
+    const pr: Presets | null = pOpen ? { 2: fitToPages(2, m), 3: fitToPages(3, m), 4: fitToPages(4, m) } : null;
+    const cur: Layout = ps.mode === "fit"
+      ? (pr?.[ps.pages] ?? fitToPages(ps.pages, m))
+      : { font: ps.font, cols: ps.cols, pages: m(ps.font, ps.cols) };
+    applyLayout(el, cur.font, cur.cols);
+    setLayout({ font: cur.font, cols: cur.cols, pages: cur.pages });
+    setPresets(pr);
+  }, [printSnap, ps, pOpen]);
 
   // Canlı listede: sekmeye dönüldüğünde ve her dakika sessizce yenile (panelde yapılan değişiklik görünsün)
   useEffect(() => {
@@ -179,7 +175,11 @@ export default function DocView() {
   const base = typeof window !== "undefined" ? location.pathname : "/dokuman";
   const hrefFor = (label: string | null) => (label ? `${base}?v=${encodeURIComponent(label)}` : base);
 
+  const printTitle = "Kasa Ürün Kodları Listesi";
+  const printSub = sel ? (live ? `Güncel liste · ${fmtDate(sel.publishedAt)}` : `Sürüm ${sel.label} · ${fmtDate(sel.publishedAt)}`) : "";
+
   return (
+    <>
     <div className="doc">
       <div className="dhead">
         <div>
@@ -197,7 +197,9 @@ export default function DocView() {
                 {live ? <span className="dchip">Güncel</span> : sel.label} ▾
               </button>
               {sel.kind === "snapshot" ? (
-                <button type="button" className="dbtn" onClick={() => window.print()}>Yazdır / PDF kaydet</button>
+                <button type="button" className="dbtn" onClick={() => setPOpen(true)} data-testid="print-open">
+                  Yazdır / PDF{layout ? <span className="dtag">≈{layout.pages} sayfa</span> : null}
+                </button>
               ) : (
                 <a className="dbtn" href={sel.pdfUrl ?? "#"} download>PDF indir</a>
               )}
@@ -264,6 +266,14 @@ export default function DocView() {
           </div>
         </div>
       )}
+      {pOpen && printSnap && (
+        <PrintDialog settings={ps} onChange={changePs} layout={layout} presets={presets}
+          onPrint={() => window.print()} onClose={() => setPOpen(false)} />
+      )}
     </div>
+    {printSnap && (
+      <PrintDoc snap={printSnap} title={printTitle} subtitle={printSub} info={ps.info} breakGroups={ps.breakGroups} stripPrefix={ps.stripPrefix} innerRef={printRef} />
+    )}
+    </>
   );
 }

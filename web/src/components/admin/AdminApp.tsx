@@ -2,15 +2,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ApiError, api, send } from "@/lib/api";
 import type { AdminData, Me } from "@/lib/types";
+import AddProductsPanel from "./AddProductsPanel";
 import ChangesPanel from "./ChangesPanel";
 import DocPanel from "./DocPanel";
 import ImportPanel from "./ImportPanel";
 import LoginForm from "./LoginForm";
 import SectionEditor from "./SectionEditor";
 
-type Tab = "products" | "channels" | "barcodes" | "meal-cards" | "doc" | "import" | "changes";
+type Tab = "products" | "add-products" | "channels" | "barcodes" | "meal-cards" | "doc" | "import" | "changes";
 const TABS: { key: Tab; label: string }[] = [
   { key: "products", label: "Ürünler" },
+  { key: "add-products", label: "Dosyadan ürün ekle" },
   { key: "channels", label: "Sipariş kanalları" },
   { key: "barcodes", label: "Barkodlar" },
   { key: "meal-cards", label: "Yemek kartları" },
@@ -76,7 +78,7 @@ export default function AdminApp() {
           <button key={t.key} type="button" onClick={() => setTab(t.key)}
             className={"rounded-full border px-3.5 py-1.5 text-sm font-semibold " + (tab === t.key ? "border-neutral-800 bg-neutral-800 text-white" : "border-neutral-300 bg-white")}>
             {t.label}
-            {data && t.key !== "import" && t.key !== "changes" && t.key !== "doc" && (
+            {data && t.key !== "import" && t.key !== "changes" && t.key !== "doc" && t.key !== "add-products" && (
               <span className="ml-1.5 opacity-60">
                 {t.key === "products" ? data.products.length : t.key === "channels" ? data.channels.length : t.key === "barcodes" ? data.barcodes.length : data.mealCards.length}
               </span>
@@ -88,9 +90,10 @@ export default function AdminApp() {
       {loadErr && <div className="mb-3 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{loadErr}</div>}
 
       {data && tab === "products" && (
-        <SectionEditor section="products" singular="Ürün" rows={data.products} onChanged={load} filterable
+        <SectionEditor section="products" singular="Ürün" rows={data.products} onChanged={load} filterable visibility
           columns={[{ prop: "code", label: "Kod", mono: true }, { prop: "name", label: "Ürün adı" }, { prop: "group", label: "Grup", suggestions: groups }]} />
       )}
+      {data && tab === "add-products" && <AddProductsPanel products={data.products} onChanged={load} />}
       {data && tab === "channels" && (
         <SectionEditor section="channels" singular="Kanal" rows={data.channels} onChanged={load}
           columns={[{ prop: "name", label: "Kanal" }, { prop: "code", label: "Kod", mono: true }]} />

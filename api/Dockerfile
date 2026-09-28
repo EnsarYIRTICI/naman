@@ -14,7 +14,6 @@ ENV GIT_COMMIT=$GIT_COMMIT
 COPY --from=build /app/package.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY seed ./seed
 USER node
 EXPOSE 4000
 CMD ["node", "dist/index.js"]

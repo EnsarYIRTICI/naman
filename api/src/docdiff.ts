@@ -13,10 +13,11 @@ export const SNAPSHOT_KEYS = ["products", "channels", "mealCards"] as const;
 const strip = (rows: AllData[keyof AllData], props: string[]): Item[] =>
   rows.map((r) => Object.fromEntries(props.map((p) => [p, String(r[p] ?? "")])) as Item);
 
+/** Dökümana sadece görünür ürünler girer (gizli ürünler sistemde kalır ama listede çıkmaz). */
 export function buildSnapshot(all: AllData): Snapshot {
   return {
     generatedAt: new Date().toISOString(),
-    products: strip(all.products, ["code", "name", "group"]),
+    products: strip(all.products.filter((r) => r.visible !== false), ["code", "name", "group"]),
     channels: strip(all.channels, ["name", "code"]),
     mealCards: strip(all.mealCards, ["name", "posName"]),
   };

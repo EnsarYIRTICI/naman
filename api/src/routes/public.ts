@@ -14,7 +14,7 @@ export function publicDataRoutes(d: Deps): Router {
       res.status(304).end();
       return;
     }
-    const all = await loadAll(d.pool);
+    const all = await loadAll(d.pool, { visibleOnly: true });
     res.json({ meta: { version, updatedAt: await lastChangeAt(d.pool), docVersion: doc ?? null }, ...all });
   });
   return r;
