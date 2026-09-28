@@ -107,7 +107,7 @@ export default function AdminApp() {
           columns={[{ prop: "name", label: "Kart" }, { prop: "posName", label: "Kasada seçilecek" }]} />
       )}
       {data && tab === "doc" && <DocPanel dataVersion={data.version} />}
-      {data && tab === "import" && <ImportPanel onChanged={load} />}
+      {data && tab === "import" && <ImportPanel products={data.products} onChanged={load} />}
       {data && tab === "changes" && <ChangesPanel version={data.version} />}
     </div>
   );

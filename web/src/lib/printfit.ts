@@ -1,125 +1,127 @@
 /**
- * Döküman yazdırma düzeni: yazı boyutu / sütun sayısı seçimi ve A4 sayfa sayısı tahmini.
- * Tahmin, yazdırılacak öğenin ekranda (görünmez) A4 genişliğinde ölçülmesiyle yapılır; tarayıcının sayfa bölme
- * kuralları (bölüm bölünmesin, sığmıyorsa yeni sayfa) burada taklit edilir. Sonuç yaklaşıktır (±1 sayfa).
+ * Döküman yazdırma düzeni (v1 PDF tarzı): A4 sayfalar, sütunlar halinde akan tablolar, her ürün bir satır.
+ * Kullanıcı sayfa sayısı değil TARZ ve YAZI BOYUTU seçer; sayfa sayısı içeriğe göre ne çıkarsa odur.
+ * Sayfalama tarayıcıya bırakılmaz: satır yükseklikleri ölçülür ve sayfalar burada kurulur (paginate). Böylece
+ * bölümler sütun sonunda düzgün bölünür, devam eden bölümün başlığı tekrarlanır ("Sebze (devam)"),
+ * alt başlık sütun dibinde yalnız kalmaz, her sayfada başlık ve sayfa numarası olur.
  */
 
-export type FitPages = 2 | 3 | 4;
+export type PrintStyle = "land2" | "port2" | "land3";
+export type PrintSize = "s" | "m" | "l";
+
 export interface PrintSettings {
-  /** fit: hedef sayfa sayısına sığan en büyük yazı; custom: elle yazı boyutu + sütun */
-  mode: "fit" | "custom";
-  pages: FitPages;
-  font: number; // pt (custom)
-  cols: 2 | 3 | 4; // uzun listelerin sütun sayısı (custom)
-  info: boolean; // yemek kartı / kanal / açıklama kutuları
-  breakGroups: boolean; // her bölüm yeni sayfadan
-  stripPrefix: boolean; // ad başındaki "MNV." / "MN." önekini yazdırma (yer kazandırır)
+  style: PrintStyle;
+  size: PrintSize;
+  info: boolean; // yemek kartı / kanal / "kod nasıl girilir" kutusu (ilk sütunda)
+  stripPrefix: boolean; // ad başındaki "MNV." / "MN." önekini yazdırma
 }
-export const DEFAULT_SETTINGS: PrintSettings = { mode: "fit", pages: 3, font: 9, cols: 3, info: true, breakGroups: false, stripPrefix: false };
+export const DEFAULT_SETTINGS: PrintSettings = { style: "land2", size: "m", info: true, stripPrefix: false };
 
-export const FONT_MIN = 6;
-export const FONT_MAX = 14;
-export const FONTS: number[] = Array.from({ length: (FONT_MAX - FONT_MIN) * 2 + 1 }, (_, i) => FONT_MIN + i / 2);
+export interface StyleCfg {
+  label: string;
+  desc: string;
+  orient: "landscape" | "portrait";
+  cols: number;
+  /** Yazı boyutu (pt): küçük / normal / büyük */
+  font: Record<PrintSize, number>;
+}
+export const STYLES: Record<PrintStyle, StyleCfg> = {
+  land2: { label: "Yatay · 2 sütun", desc: "Eski v1 düzeni. Rahat okunur, satırlar geniş.", orient: "landscape", cols: 2, font: { s: 7.5, m: 8.5, l: 10 } },
+  port2: { label: "Dikey · 2 sütun", desc: "Dikey kağıt, iki tablo yan yana.", orient: "portrait", cols: 2, font: { s: 7, m: 8, l: 9 } },
+  land3: { label: "Yatay · 3 sütun", desc: "Daha sık; daha az sayfa, yazı biraz küçük.", orient: "landscape", cols: 3, font: { s: 6.5, m: 7.5, l: 8.5 } },
+};
+export const SIZE_LABEL: Record<PrintSize, string> = { s: "Küçük", m: "Normal", l: "Büyük" };
 
-/** A4 (210×297 mm), 10 mm kenar boşluğu → içerik 190×277 mm. CSS'te 1 mm = 96/25.4 px. */
-export const MM = 96 / 25.4;
-export const PAGE_W_MM = 190;
-export const PAGE_H_PX = 277 * MM;
+// ── Sayfalama ──
 
-export interface Block {
-  /** Bloğun alt boşluğu dahil yüksekliği (px) */
-  h: number;
-  /** Bu blok yeni sayfadan başlasın */
-  breakBefore: boolean;
-  /** Blok bölünmesin (sığmıyorsa bir sonraki sayfaya geçsin) */
-  avoid: boolean;
+export type FlowItem = { kind: "row"; h: number; ref: number } | { kind: "sub"; h: number; ref: number };
+export interface FlowSection {
+  items: FlowItem[];
+}
+export type Block =
+  | { kind: "info" }
+  | { kind: "section"; sec: number; cont: boolean; items: FlowItem[] };
+export interface Page {
+  columns: Block[][];
+}
+export interface Dims {
+  cols: number;
+  /** Bir sütunun kullanılabilir yüksekliği (px) */
+  colH: number;
+  /** Bölüm başlık çubuğunun yüksekliği (px) */
+  headH: number;
+  /** Bölümler arası boşluk (px) */
+  gap: number;
+  /** İlk sütundaki bilgi kutusunun yüksekliği (yoksa 0 / null) */
+  infoH: number | null;
 }
 
-/** Blokları sayfalara yerleştirip sayfa sayısını döndürür. */
-export function simulatePages(blocks: Block[], pageH: number): number {
-  let pages = 1;
+/** Bölüm başında en az bu kadar satır aynı sütunda olmalı (yoksa bölüm sonraki sütundan başlar). */
+const MIN_ROWS = 3;
+
+export function paginate(sections: FlowSection[], d: Dims): Page[] {
+  const pages: Page[] = [];
+  let col = -1;
   let used = 0;
-  for (const b of blocks) {
-    if (b.h <= 0) continue;
-    if (b.breakBefore && used > 0) {
-      pages++;
-      used = 0;
+  const cur = () => pages[pages.length - 1]!.columns[col]!;
+  const nextCol = () => {
+    col++;
+    if (pages.length === 0 || col >= d.cols) {
+      pages.push({ columns: Array.from({ length: d.cols }, () => []) });
+      col = 0;
     }
-    if (used + b.h <= pageH) {
-      used += b.h;
-    } else if (b.avoid && b.h <= pageH && used > 0) {
-      pages++;
-      used = b.h;
-    } else {
-      // Bölünür: kalan yeri doldurup sonraki sayfalara taşar
-      let rest = b.h - (pageH - used);
-      pages++;
-      while (rest > pageH) {
-        rest -= pageH;
-        pages++;
+    used = 0;
+  };
+  nextCol();
+  if (d.infoH !== null && d.infoH > 0) {
+    cur().push({ kind: "info" });
+    used = d.infoH + d.gap;
+  }
+  sections.forEach((s, si) => {
+    let i = 0;
+    let first = true;
+    if (s.items.length === 0) return;
+    while (i < s.items.length) {
+      // Başlık + ilk birkaç satır bu sütuna sığmıyorsa sonraki sütuna geç
+      let need = d.headH;
+      for (let k = i, rows = 0; k < s.items.length && rows < MIN_ROWS; k++) {
+        need += s.items[k]!.h;
+        if (s.items[k]!.kind === "row") rows++;
       }
-      used = rest;
+      if (used > 0 && used + need > d.colH) nextCol();
+      const block: Block = { kind: "section", sec: si, cont: !first, items: [] };
+      cur().push(block);
+      used += d.headH;
+      while (i < s.items.length) {
+        const it = s.items[i]!;
+        // Alt başlık, altındaki ilk satırla birlikte taşınır (sütun dibinde yalnız kalmaz)
+        const h = it.kind === "sub" ? it.h + (s.items[i + 1]?.h ?? 0) : it.h;
+        if (used + h > d.colH && block.items.some((x) => x.kind === "row")) break;
+        block.items.push(it);
+        used += it.h;
+        i++;
+      }
+      first = false;
+      if (i < s.items.length) nextCol();
     }
-  }
+    used += d.gap;
+  });
   return pages;
-}
-
-export interface Layout {
-  font: number;
-  cols: 2 | 3 | 4;
-  pages: number;
-}
-
-/**
- * Hedef sayfa sayısına sığan en büyük yazı boyutunu bulur. measure(font, cols) → sayfa sayısı.
- * Her sütun sayısı için yazı boyutu ikili aramayla bulunur (yazı büyüdükçe sayfa artar); en büyük yazıyı veren
- * düzen seçilir, eşitlikte 3 → 2 → 4 sütun tercih edilir. En küçük yazıda da sığmıyorsa en az sayfalı düzen döner.
- */
-export function fitToPages(target: number, measure: (font: number, cols: 2 | 3 | 4) => number): Layout & { fits: boolean } {
-  let best: Layout | null = null;
-  let fallback: Layout | null = null;
-  for (const cols of [3, 2, 4] as const) {
-    let lo = 0;
-    let hi = FONTS.length - 1;
-    let found = -1;
-    let foundPages = 0;
-    while (lo <= hi) {
-      const mid = (lo + hi) >> 1;
-      const pages = measure(FONTS[mid]!, cols);
-      if (pages <= target) {
-        found = mid;
-        foundPages = pages;
-        lo = mid + 1;
-      } else hi = mid - 1;
-    }
-    if (found >= 0) {
-      if (!best || FONTS[found]! > best.font) best = { font: FONTS[found]!, cols, pages: foundPages };
-    } else {
-      const pages = measure(FONT_MIN, cols);
-      if (!fallback || pages < fallback.pages) fallback = { font: FONT_MIN, cols, pages };
-    }
-  }
-  return best ? { ...best, fits: true } : { ...fallback!, fits: false };
 }
 
 /** "MNV.BIBER KG" → "BIBER KG", "MN. PATLICAN MOR KG" → "PATLICAN MOR KG" */
 export const stripName = (name: string) => name.replace(/^\s*MNV?\s*\.\s*/i, "") || name;
-
-export const shortCols = (cols: number) => (cols >= 4 ? 3 : 2);
 export const fmtPt = (n: number) => n.toLocaleString("tr-TR", { maximumFractionDigits: 1 });
 
 export function loadSettings(raw: string | null): PrintSettings {
   try {
     const s = raw ? (JSON.parse(raw) as Partial<PrintSettings>) : {};
     const out = { ...DEFAULT_SETTINGS, ...s };
-    if (!["fit", "custom"].includes(out.mode)) out.mode = DEFAULT_SETTINGS.mode;
-    if (![2, 3, 4].includes(out.pages)) out.pages = DEFAULT_SETTINGS.pages;
-    if (![2, 3, 4].includes(out.cols)) out.cols = DEFAULT_SETTINGS.cols;
-    if (!FONTS.includes(out.font)) out.font = DEFAULT_SETTINGS.font;
+    if (!(out.style in STYLES)) out.style = DEFAULT_SETTINGS.style;
+    if (!(out.size in SIZE_LABEL)) out.size = DEFAULT_SETTINGS.size;
     out.info = out.info !== false;
-    out.breakGroups = out.breakGroups === true;
     out.stripPrefix = out.stripPrefix === true;
-    return out;
+    return { style: out.style, size: out.size, info: out.info, stripPrefix: out.stripPrefix };
   } catch {
     return { ...DEFAULT_SETTINGS };
   }

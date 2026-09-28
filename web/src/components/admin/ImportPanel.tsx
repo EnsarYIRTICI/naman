@@ -1,15 +1,17 @@
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ApiError, send } from "@/lib/api";
-import { decodeText, parseProductsCsv } from "@/lib/importfile";
-import type { ImportResponse } from "@/lib/types";
+import { decodeText } from "@/lib/importfile";
+import { readProductFile, suggestGroup } from "@/lib/productfile";
+import type { ImportResponse, Product } from "@/lib/types";
+import FilePicker from "./FilePicker";
 
 type Mode = "merge" | "replace";
 const SAMPLE_CSV = "Kod;Ürün Adı;Grup\n2900027;MNV.BARBUNYA KG;Sebze\n2900100;MNV.BEZELYE KG;Sebze\n";
 
-export default function ImportPanel({ onChanged }: { onChanged: () => Promise<void> }) {
-  const fileRef = useRef<HTMLInputElement>(null);
+export default function ImportPanel({ products, onChanged }: { products: Product[]; onChanged: () => Promise<void> }) {
   const [fileName, setFileName] = useState("");
+  const [fileNotes, setFileNotes] = useState<string[]>([]);
   const [payload, setPayload] = useState<unknown>(null);
   const [mode, setMode] = useState<Mode>("merge");
   const [preview, setPreview] = useState<ImportResponse | null>(null);
@@ -31,15 +33,44 @@ export default function ImportPanel({ onChanged }: { onChanged: () => Promise<vo
     }
   }
 
+  /** Excel / CSV ürün listesi → { products }. Grup sütunu yoksa var olan ürünlerin grubu korunur, yenilere grup önerilir. */
+  async function tableToProducts(file: File) {
+    const parsed = await readProductFile(file);
+    if (!parsed.items.length) throw new Error(parsed.warnings[0] ?? "Dosyada ürün bulunamadı.");
+    const byCode = new Map(products.map((p) => [p.code, p.group]));
+    const notes = [...parsed.warnings];
+    if (parsed.groupSource !== "column") {
+      notes.unshift(
+        "Dosyada Grup sütunu yok: sistemde olan ürünlerin grubu korunur, yeni ürünlere grup tahmin edildi. " +
+        "Yeni ürünleri grubunu ve görünürlüğünü seçerek eklemek için \"Dosyadan ürün ekle\" sekmesi daha uygundur.",
+      );
+    }
+    const suggested = new Map<string, string>();
+    const groupFor = (fg: string) => {
+      if (!suggested.has(fg)) suggested.set(fg, suggestGroup(fg, parsed.items.filter((i) => i.fileGroup === fg), products));
+      return suggested.get(fg)!;
+    };
+    setFileNotes(notes);
+    return {
+      products: parsed.items.map((i) => ({
+        code: i.code,
+        name: i.name,
+        group: parsed.groupSource === "column" && i.fileGroup ? i.fileGroup : (byCode.get(i.code) ?? groupFor(i.fileGroup)),
+      })),
+    };
+  }
+
   async function onFile(file: File | undefined) {
     setOkMsg("");
     setPreview(null);
     setPayload(null);
+    setErrs([]);
+    setFileNotes([]);
     if (!file) return;
     setFileName(file.name);
     try {
-      const text = decodeText(await file.arrayBuffer());
-      const data = /\.json$/i.test(file.name) ? JSON.parse(text) : parseProductsCsv(text);
+      const isJson = /\.json$/i.test(file.name);
+      const data = isJson ? JSON.parse(decodeText(await file.arrayBuffer())) : await tableToProducts(file);
       setPayload(data);
       await doPreview(data, mode);
     } catch (e) {
@@ -59,7 +90,7 @@ export default function ImportPanel({ onChanged }: { onChanged: () => Promise<vo
       setPreview(null);
       setPayload(null);
       setFileName("");
-      if (fileRef.current) fileRef.current.value = "";
+      setFileNotes([]);
       await onChanged();
     } catch (e) {
       const a = e as ApiError;
@@ -76,11 +107,13 @@ export default function ImportPanel({ onChanged }: { onChanged: () => Promise<vo
       <div className={card}>
         <h3 className="m-0 mb-1 text-sm font-semibold">Veri yükle</h3>
         <p className="m-0 mb-3 text-xs leading-relaxed text-neutral-500">
-          <b>.json</b> (eski <code>products.json</code> ya da yedek dosyası) veya ürün listesi için <b>.csv</b> (Excel&apos;den &quot;CSV olarak kaydet&quot;;
-          sütunlar: <code>Kod;Ürün Adı;Grup</code>). Önce önizleme gösterilir, onaylamadan hiçbir şey değişmez.
+          Ürün listesi için <b>Excel (.xlsx)</b> ya da <b>CSV</b> (sütunlar: <code>Kod</code>, <code>Ürün Adı</code>, <code>Grup</code> — sipariş evrakındaki{" "}
+          <code>Stok Kodu</code> / <code>Stok Adı</code> da olur); tüm veri için <b>JSON</b> yedek dosyası. Önce önizleme gösterilir, onaylamadan hiçbir şey değişmez.
         </p>
-        <div className="mb-3 flex flex-wrap items-center gap-3">
-          <input ref={fileRef} type="file" accept=".json,.csv,.txt" onChange={(e) => onFile(e.target.files?.[0])} className="text-sm" />
+        <div className="mb-2">
+          <FilePicker accept=".json,.csv,.txt,.tsv,.xlsx,.xlsm" formats="Excel (.xlsx) · CSV / TXT · JSON" fileName={fileName} disabled={busy} onFile={onFile} testId="import-file" />
+        </div>
+        <div className="mb-3 text-right">
           <a className="text-xs underline" href={"data:text/csv;charset=utf-8," + encodeURIComponent("\uFEFF" + SAMPLE_CSV)} download="urunler-ornek.csv">Örnek CSV indir</a>
         </div>
         <div className="flex flex-wrap gap-4 text-sm">
@@ -109,7 +142,13 @@ export default function ImportPanel({ onChanged }: { onChanged: () => Promise<vo
       {preview && (
         <div className={card} data-testid="preview">
           <h3 className="m-0 mb-2 text-sm font-semibold">Önizleme — {fileName} ({mode === "merge" ? "birleştir" : "değiştir"})</h3>
-          {preview.notes.map((n) => <div key={n} className="mb-1 text-xs text-amber-700">{n}</div>)}
+          {[...fileNotes.slice(0, 1), ...preview.notes].map((n) => <div key={n} className="mb-1 text-xs text-amber-700">{n}</div>)}
+          {fileNotes.length > 1 && (
+            <details className="mb-2 text-xs text-amber-700">
+              <summary className="cursor-pointer">{fileNotes.length - 1} uyarı</summary>
+              <ul className="m-0 mt-1 list-disc pl-5">{fileNotes.slice(1, 50).map((w, i) => <li key={i}>{w}</li>)}</ul>
+            </details>
+          )}
           {preview.sections.map((s) => (
             <div key={s.key} className="mb-3 border-t border-neutral-100 pt-2 text-sm">
               <div className="font-semibold">{s.label}</div>

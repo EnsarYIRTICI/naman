@@ -30,7 +30,7 @@ docker compose logs -f api
   - yeni ürünlerin görünürlüğünü seçersiniz: *siparişi/satışı olanlar görünür* (dosyada Sipariş/Satış/Miktar sütunu varsa), *hepsi görünür* ya da *hepsi gizli*; ürün ürün de değiştirilebilir;
   - sistemde gizli olup dosyada siparişi/satışı olan ürünler için "Bunları görünür yap" önerilir.
   - Eski `.xls` okunmaz (Excel'de "Farklı Kaydet → .xlsx"); PDF'ten ürün okunmaz.
-- **Veri yükle:** (toplu düzeltme / yedekten geri yükleme) `.json` (eski `products.json` biçimi ya da panelden indirilen yedek) veya ürün listesi için `.csv`. Önce **önizleme** gösterilir (kaç kayıt eklenecek/güncellenecek/silinecek); onaylamadan hiçbir şey değişmez. Dosyada hata varsa (tekrarlanan kod, boş alan vb.) hiçbir şey yüklenmez ve nedeni listelenir.
+- **Veri yükle:** (toplu düzeltme / yedekten geri yükleme) `.xlsx`, `.csv` ya da `.json`. Excel/CSV'de Grup sütunu yoksa sistemdeki ürünlerin grubu korunur; `.json` eski `products.json` biçimi ya da panelden indirilen yedek olabilir. Önce **önizleme** gösterilir (kaç kayıt eklenecek/güncellenecek/silinecek); onaylamadan hiçbir şey değişmez. Dosyada hata varsa (tekrarlanan kod, boş alan vb.) hiçbir şey yüklenmez ve nedeni listelenir.
   - **Birleştir:** yeni kayıtlar eklenir, var olanlar güncellenir, hiçbir şey silinmez.
   - **Değiştir:** dosyada olmayan kayıtlar silinir; liste dosyadaki gibi olur.
 - **CSV biçimi:** `Kod;Ürün Adı;Grup` (Excel'den "CSV olarak kaydet"; UTF-8 ya da Türkçe Windows kodlaması otomatik anlaşılır; ayraç `;` `,` veya sekme).
@@ -47,11 +47,12 @@ Eskiden PDF'i elle üretip `index.html`'e sürüm satırı ekleyerek yayınlıyo
 - **Eski PDF'ler:** v1–v5 arşiv PDF'leri mevcut kurulumun veritabanında durur ve sürüm listesinde "PDF arşiv" etiketiyle görünür. (v3.2'den itibaren depoda seed/arşiv dosyası yoktur; yeni kurulumda sürüm listesi boş başlar, ilk "Yayınla" ile `v1` oluşur.)
 - **Gizli ürünler** dökümana girmez; bir ürünü gizlemek sonraki sürüm notunda "silindi" olarak görünür.
 - **Doğrudan bağlantılar:** `https://namdoc.xenny.cloud/?v=v3` gibi eski adresler aynen çalışır. Eski sürüm açıkken üstte uyarı ve "Güncel listeye dön" bağlantısı çıkar.
-- **PDF / yazdırma düzeni:** Yeni sürümler sayfa olarak gösterilir (telefonda okunur, metin aranabilir). Sayfadaki **"Yazdır / PDF"** düğmesi bir düzen penceresi açar:
-  - **2 / 3 / 4 sayfa:** liste o sayfa sayısına sığacak **en büyük yazı boyutuyla** (6–14 pt) ve uygun sütun sayısıyla hazırlanır. Her seçeneğin yanında hangi yazı boyutuna denk geldiği yazar. Ürün sayısı değiştikçe yazı boyutu da değişir.
-  - **Özel:** yazı boyutu ve sütun sayısını (2/3/4) siz seçersiniz; tahmini sayfa sayısı anında görünür.
-  - Seçenekler: yemek kartı / kanal / "kod nasıl girilir" kutusu, ad başındaki "MNV./MN." önekini yazmama (daha az satır kayması), her bölümün yeni sayfadan başlaması.
-  - Sayfa sayısı, yazdırılacak düzen A4 genişliğinde ölçülerek hesaplanır (yaklaşık; ±1). Tarayıcının yazdırma ekranında kağıt A4, ölçek %100/Varsayılan olmalı. Seçim o cihazda hatırlanır. Tarayıcının kendi Ctrl+P'si de aynı düzeni kullanır.
+- **PDF / yazdırma:** Sayfadaki **"Yazdır / PDF"** düğmesi bir pencere açar. Sayfa sayısı seçilmez; **tarz** ve **yazı boyutu** seçilir, sayfa sayısı içeriğe göre ne çıkarsa odur (düğmede ve pencerede yazar):
+  - Tarzlar: **Yatay · 2 sütun** (eski v1 PDF düzeni), **Dikey · 2 sütun**, **Yatay · 3 sütun** (daha sık). Yazı boyutu: Küçük / Normal / Büyük.
+  - Düzen v1 gibidir: renkli bölüm başlıkları, çizgili (zebra) tablo satırları, her ürün tek satır, kod sağda ayrı sütunda; bölüm sütun sonunda bölünürse devamı "Sebze (devam)" başlığıyla sürer; her sayfada başlık ve "Sayfa 1 / 4".
+  - Sayfalar tarayıcıya bırakılmaz, satırlar ölçülüp sayfalar uygulamada kurulur; penceredeki önizleme basılacak sayfaların aynısıdır.
+  - Seçenekler: yemek kartı / kanal / "kod nasıl girilir" kutusu, ad başındaki "MNV./MN." önekini yazmama. Seçim o cihazda hatırlanır.
+  - Tarayıcının yazdırma ekranında ölçek Varsayılan / %100 olmalı. Kağıt yönü tarza göre otomatik gelir; tarayıcının tarih/adres üst bilgisi basılmaz.
 - **Sınırlar:** Sürümlere barkodlar dahil değildir (eski PDF'te de yoktu). Sürüm silmek geri alınamaz; son sürüm olarak işaretli sürüm silinemez. Arşiv PDF'ler sayfa içinde gömülü gösterilir, bazı telefonlarda yalnızca ilk sayfa görünebilir; "PDF'i yeni sekmede aç" bağlantısı vardır.
 
 `nginx/namdoc.conf`: `namdoc.xenny.cloud` alan adını bu uygulamaya bağlar. Bu alan adında **sadece** döküman ve okuma API'si (`/api/public/`) açıktır; `/admin` ve girişli API'ler kapalıdır (404).

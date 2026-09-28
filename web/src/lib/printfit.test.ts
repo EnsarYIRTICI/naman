@@ -1,50 +1,47 @@
 import { describe, expect, it } from "vitest";
-import { fitToPages, loadSettings, simulatePages } from "./printfit";
+import { loadSettings, paginate, stripName, type FlowItem, type FlowSection, type Page } from "./printfit";
 
-describe("simulatePages", () => {
-  const b = (h: number, avoid = true, breakBefore = false) => ({ h, avoid, breakBefore });
-  it("sığan blokları aynı sayfaya koyar, sığmayan bölünmez bloğu yeni sayfaya taşır", () => {
-    expect(simulatePages([b(40), b(50)], 100)).toBe(1);
-    expect(simulatePages([b(40), b(70)], 100)).toBe(2);
+const rows = (n: number, h = 10): FlowItem[] => Array.from({ length: n }, (_, i) => ({ kind: "row", h, ref: i }));
+const sec = (...items: FlowItem[][]): FlowSection => ({ items: items.flat() });
+const dims = { cols: 2, colH: 100, headH: 20, gap: 10, infoH: null };
+/** Sayfa → sütun → blok → satır sayısı özeti */
+const shape = (pages: Page[]) =>
+  pages.map((p) => p.columns.map((c) => c.map((b) => (b.kind === "info" ? "info" : `${b.sec}${b.cont ? "+" : ""}:${b.items.length}`))));
+
+describe("paginate", () => {
+  it("bölümü sütun sonunda böler, devamı sonraki sütunda başlıkla sürer", () => {
+    // sütun: 20 başlık + 8 satır = 100
+    expect(shape(paginate([sec(rows(12))], dims))).toEqual([[["0:8"], ["0+:4"]]]);
   });
-  it("sayfadan uzun blok bölünür", () => {
-    expect(simulatePages([b(30), b(250)], 100)).toBe(3); // 70 + 100 + 80
-    expect(simulatePages([b(250)], 100)).toBe(3);
+  it("sütunlar dolunca yeni sayfa açar", () => {
+    expect(shape(paginate([sec(rows(20))], dims))).toEqual([[["0:8"], ["0+:8"]], [["0+:4"], []]]);
   });
-  it("yeni sayfadan başla", () => {
-    expect(simulatePages([b(10), b(10, true, true), b(10, true, true)], 100)).toBe(3);
+  it("yeni bölümün başlığı + 3 satırı sığmıyorsa bölüm sonraki sütundan başlar", () => {
+    // ilk bölüm 20+6*10=80 (+10 boşluk=90); ikinci bölüm için 20+30 gerekir → sonraki sütun
+    expect(shape(paginate([sec(rows(6)), sec(rows(4))], dims))).toEqual([[["0:6"], ["1:4"]]]);
+  });
+  it("sığıyorsa aynı sütunda devam eder", () => {
+    expect(shape(paginate([sec(rows(2)), sec(rows(3))], dims))).toEqual([[["0:2", "1:3"], []]]);
+  });
+  it("bilgi kutusu ilk sütunun başına gelir", () => {
+    expect(shape(paginate([sec(rows(3))], { ...dims, infoH: 40 }))).toEqual([[["info", "0:3"], []]]);
+  });
+  it("alt başlık sütun dibinde yalnız kalmaz", () => {
+    const items: FlowItem[] = [...rows(7), { kind: "sub", h: 10, ref: 0 }, ...rows(2)];
+    // 20 + 70 = 90; alt başlık (10) + satır (10) = 20 sığmaz → alt başlık sonraki sütuna
+    expect(shape(paginate([sec(items)], dims))).toEqual([[["0:7"], ["0+:3"]]]);
   });
 });
 
-describe("fitToPages", () => {
-  // Sahte ölçüm: sayfa = yazı * 0.4 (3 sütun), 2 sütunda %30 fazla, 4 sütunda %20 az
-  const measure = (font: number, cols: number) => Math.ceil(font * 0.4 * (cols === 2 ? 1.3 : cols === 4 ? 0.8 : 1));
-  it("hedefe sığan en büyük yazıyı seçer", () => {
-    const r = fitToPages(3, measure);
-    expect(r.fits).toBe(true);
-    expect(r.pages).toBeLessThanOrEqual(3);
-    expect(r).toMatchObject({ font: 9, cols: 4 });
+describe("loadSettings / stripName", () => {
+  it("bozuk ya da eski (sayfa sayılı) ayarda varsayılana döner", () => {
+    expect(loadSettings("{bozuk")).toEqual({ style: "land2", size: "m", info: true, stripPrefix: false });
+    expect(loadSettings(JSON.stringify({ mode: "fit", pages: 3, style: "x" }))).toMatchObject({ style: "land2", size: "m" });
+    expect(loadSettings(JSON.stringify({ style: "land3", size: "l" }))).toMatchObject({ style: "land3", size: "l" });
   });
-  it("sığmıyorsa en az sayfalı düzeni verir", () => {
-    const r = fitToPages(1, measure);
-    expect(r.fits).toBe(false);
-    expect(r.font).toBe(6);
-  });
-});
-
-describe("loadSettings", () => {
-  it("bozuk / eksik ayarda varsayılana döner", () => {
-    expect(loadSettings("{bozuk").mode).toBe("fit");
-    expect(loadSettings(JSON.stringify({ pages: 7, font: 99, cols: 4 }))).toMatchObject({ pages: 3, font: 9, cols: 4 });
-  });
-});
-
-describe("stripName", () => {
-  it("MNV. / MN. önekini kaldırır, diğerlerine dokunmaz", async () => {
-    const { stripName } = await import("./printfit");
+  it("MNV. / MN. önekini kaldırır", () => {
     expect(stripName("MNV.BIBER KG")).toBe("BIBER KG");
     expect(stripName("MN. PATLICAN MOR KG")).toBe("PATLICAN MOR KG");
-    expect(stripName("MNV KURU INCIR KG")).toBe("MNV KURU INCIR KG");
     expect(stripName("SEN PILIC BAGET KG")).toBe("SEN PILIC BAGET KG");
   });
 });

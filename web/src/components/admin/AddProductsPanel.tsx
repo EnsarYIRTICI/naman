@@ -1,9 +1,10 @@
 "use client";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { ApiError, send } from "@/lib/api";
 import { readProductFile, suggestGroup, type FileItem, type ParsedFile } from "@/lib/productfile";
 import { getCategory } from "@/lib/text";
 import type { ImportResponse, Product } from "@/lib/types";
+import FilePicker from "./FilePicker";
 
 type VisMode = "active" | "all" | "none";
 const CAT_LABEL: Record<string, string> = { sebze: "Sebze", meyve: "Meyve", kasap: "Kasap", sarkuteri: "Şarküteri", diger: "Diğer" };
@@ -15,7 +16,6 @@ const inp = "w-full rounded-md border border-neutral-300 bg-white px-2 py-1 text
  * Sistemde zaten olan kodlara dokunulmaz. Yeni ürünlerin görünür/gizli olacağı ve grubu eklemeden önce seçilir.
  */
 export default function AddProductsPanel({ products, onChanged }: { products: Product[]; onChanged: () => Promise<void> }) {
-  const fileRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState("");
   const [parsed, setParsed] = useState<ParsedFile | null>(null);
   const [groupMap, setGroupMap] = useState<Record<string, string>>({});
@@ -50,7 +50,6 @@ export default function AddProductsPanel({ products, onChanged }: { products: Pr
     setRowGroup({});
     setInclude({});
     setVisible({});
-    if (fileRef.current) fileRef.current.value = "";
   }
 
   async function onFile(file: File | undefined) {
@@ -131,8 +130,8 @@ export default function AddProductsPanel({ products, onChanged }: { products: Pr
           <b>Stok Adı</b> (ya da Kod / Ürün Adı) sütunları olmalı; &quot;Ürün Grubu: …&quot; satırları ve Grup sütunu tanınır.
           Sistemde <b>olmayan</b> kodlar eklenir, <b>olanlara dokunulmaz</b>. Eklemeden önce önizleme gösterilir.
         </p>
-        <input ref={fileRef} type="file" accept=".xlsx,.xlsm,.csv,.txt,.tsv,.json" disabled={busy}
-          onChange={(e) => onFile(e.target.files?.[0])} className="text-sm" data-testid="add-file" />
+        <FilePicker accept=".xlsx,.xlsm,.csv,.txt,.tsv,.json" formats="Excel (.xlsx) · CSV / TXT · JSON" fileName={fileName}
+          disabled={busy} onFile={onFile} testId="add-file" />
         <p className="m-0 mt-2 text-xs text-neutral-400">Eski .xls dosyalarını Excel&apos;de &quot;Farklı Kaydet → .xlsx&quot; ile kaydedip yükleyin. PDF&apos;ten okunamaz.</p>
       </div>
 

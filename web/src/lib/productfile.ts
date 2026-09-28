@@ -29,6 +29,8 @@ export interface ParsedFile {
   items: FileItem[];
   /** Sipariş/satış miktarı sütun başlıkları (varsa) */
   activityCols: string[];
+  /** Grup bilgisinin kaynağı: Grup sütunu, "Ürün Grubu: …" satırları ya da yok */
+  groupSource: "column" | "rows" | "none";
   warnings: string[];
 }
 
@@ -76,7 +78,7 @@ function findHeader(rows: string[][]): Header | null {
 export function parseProductTable(rows: string[][], sheet: string | null = null): ParsedFile {
   const warnings: string[] = [];
   const nonEmpty = rows.filter((r) => r.some((c) => (c ?? "").trim() !== ""));
-  if (nonEmpty.length === 0) return { sheet, items: [], activityCols: [], warnings: ["Dosya boş."] };
+  if (nonEmpty.length === 0) return { sheet, items: [], activityCols: [], groupSource: "none", warnings: ["Dosya boş."] };
 
   let h = findHeader(rows);
   if (!h) {
@@ -137,7 +139,8 @@ export function parseProductTable(rows: string[][], sheet: string | null = null)
     items.push({ code, name, fileGroup: cell(h.group) || curGroup, row: i + 1, active, activity: act.join(" · ") });
   }
   if (items.length === 0) warnings.unshift("Dosyada ürün satırı bulunamadı.");
-  return { sheet, items, activityCols, warnings };
+  const groupSource = h.group !== -1 ? "column" : items.some((i) => i.fileGroup) ? "rows" : "none";
+  return { sheet, items, activityCols, groupSource, warnings };
 }
 
 function parseJson(text: string): ParsedFile {

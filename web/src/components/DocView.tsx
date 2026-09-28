@@ -1,11 +1,11 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { splitCode } from "@/lib/codes";
 import { buildSections } from "@/lib/docsections";
-import { DEFAULT_SETTINGS, fitToPages, loadSettings, type Layout, type PrintSettings } from "@/lib/printfit";
+import { DEFAULT_SETTINGS, STYLES, loadSettings, type PrintSettings } from "@/lib/printfit";
 import type { DocPublic, DocSnapshot } from "@/lib/types";
-import { PrintDialog, PrintDoc, applyLayout, measurePages, type Presets } from "./PrintDoc";
+import { PrintDialog, PrintMeasure, PrintPages, type PrintPlan } from "./PrintDoc";
 
 const PRINT_KEY = "naman:print";
 
@@ -111,9 +111,7 @@ export default function DocView() {
   const [dlg, setDlg] = useState(false);
   const [pOpen, setPOpen] = useState(false);
   const [ps, setPs] = useState<PrintSettings>(DEFAULT_SETTINGS);
-  const [layout, setLayout] = useState<Layout | null>(null);
-  const [presets, setPresets] = useState<Presets | null>(null);
-  const printRef = useRef<HTMLDivElement>(null);
+  const [plan, setPlan] = useState<PrintPlan | null>(null);
 
   // Yazdırma ayarı cihazda hatırlanır
   useEffect(() => {
@@ -143,22 +141,6 @@ export default function DocView() {
   const live = !!sel?.live;
   const printSnap = sel?.kind === "snapshot" ? sel.snapshot : null;
 
-  // Yazdırılacak A4 düzenini ölç: seçilen sayfa sayısına sığan yazı boyutu (ya da elle seçilen) + sayfa tahmini
-  useLayoutEffect(() => {
-    const el = printRef.current;
-    if (!el || !printSnap) {
-      setLayout(null);
-      return;
-    }
-    const m = (font: number, cols: number) => measurePages(el, font, cols);
-    const pr: Presets | null = pOpen ? { 2: fitToPages(2, m), 3: fitToPages(3, m), 4: fitToPages(4, m) } : null;
-    const cur: Layout = ps.mode === "fit"
-      ? (pr?.[ps.pages] ?? fitToPages(ps.pages, m))
-      : { font: ps.font, cols: ps.cols, pages: m(ps.font, ps.cols) };
-    applyLayout(el, cur.font, cur.cols);
-    setLayout({ font: cur.font, cols: cur.cols, pages: cur.pages });
-    setPresets(pr);
-  }, [printSnap, ps, pOpen]);
 
   // Canlı listede: sekmeye dönüldüğünde ve her dakika sessizce yenile (panelde yapılan değişiklik görünsün)
   useEffect(() => {
@@ -175,7 +157,6 @@ export default function DocView() {
   const base = typeof window !== "undefined" ? location.pathname : "/dokuman";
   const hrefFor = (label: string | null) => (label ? `${base}?v=${encodeURIComponent(label)}` : base);
 
-  const printTitle = "Kasa Ürün Kodları Listesi";
   const printSub = sel ? (live ? `Güncel liste · ${fmtDate(sel.publishedAt)}` : `Sürüm ${sel.label} · ${fmtDate(sel.publishedAt)}`) : "";
 
   return (
@@ -198,7 +179,7 @@ export default function DocView() {
               </button>
               {sel.kind === "snapshot" ? (
                 <button type="button" className="dbtn" onClick={() => setPOpen(true)} data-testid="print-open">
-                  Yazdır / PDF{layout ? <span className="dtag">≈{layout.pages} sayfa</span> : null}
+                  Yazdır / PDF{plan ? <span className="dtag">{plan.pages.length} sayfa</span> : null}
                 </button>
               ) : (
                 <a className="dbtn" href={sel.pdfUrl ?? "#"} download>PDF indir</a>
@@ -267,12 +248,21 @@ export default function DocView() {
         </div>
       )}
       {pOpen && printSnap && (
-        <PrintDialog settings={ps} onChange={changePs} layout={layout} presets={presets}
+        <PrintDialog settings={ps} onChange={changePs} plan={plan} snap={printSnap} subtitle={printSub}
           onPrint={() => window.print()} onClose={() => setPOpen(false)} />
       )}
     </div>
     {printSnap && (
-      <PrintDoc snap={printSnap} title={printTitle} subtitle={printSub} info={ps.info} breakGroups={ps.breakGroups} stripPrefix={ps.stripPrefix} innerRef={printRef} />
+      <>
+        <PrintMeasure snap={printSnap} settings={ps} onPlan={setPlan} />
+        {plan && (
+          <div className="dprint-wrap" aria-hidden="true">
+            {/* Kağıt yönü tarza göre; kenar boşluğu sayfanın içinde (tarayıcı üst/alt bilgisi de çıkmaz) */}
+            <style>{`@page { size: A4 ${STYLES[ps.style].orient}; margin: 0; }`}</style>
+            <PrintPages plan={plan} snap={printSnap} settings={ps} subtitle={printSub} />
+          </div>
+        )}
+      </>
     )}
     </>
   );
