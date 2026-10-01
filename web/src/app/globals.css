@@ -288,7 +288,7 @@ body {
   font-family: "DejaVu Sans", Verdana, "Segoe UI", sans-serif; font-size: var(--pf, 8.5pt); line-height: 1.25; color: #1a1a1a;
 }
 .pc [data-cat="sebze"], .pm [data-cat="sebze"] { --c: #2e7d32; }
-.pc [data-cat="meyve"], .pm [data-cat="meyve"] { --c: #b45309; }
+.pc [data-cat="meyve"], .pm [data-cat="meyve"] { --c: #6a1b9a; }
 .pc [data-cat="kasap"], .pm [data-cat="kasap"] { --c: #c62828; }
 .pc [data-cat="sarkuteri"], .pm [data-cat="sarkuteri"] { --c: #1d4ed8; }
 .pc [data-cat="diger"], .pm [data-cat="diger"] { --c: #455a64; }
