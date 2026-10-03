@@ -35,6 +35,8 @@ body {
 .pub [data-cat="meyve"] { --c: #9c27b0; --c-soft: #f3e5f5; }
 .pub [data-cat="kasap"] { --c: #b71c1c; --c-soft: #ffebee; }
 .pub [data-cat="sarkuteri"] { --c: #8d6e00; --c-soft: #fff8dc; }
+.pub [data-cat="diger"] { --c: #455a64; --c-soft: #eceff1; }
+.pub [data-cat="adet"] { --c: #00695c; --c-soft: #e0f2f1; }
 
 .pub h1 { font-size: 1.05rem; margin: 0; color: var(--accent); }
 .pub .head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 4px 0 2px; }
@@ -65,10 +67,13 @@ body {
 .pub .bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 6px; }
 .pub .chips { display: flex; gap: 5px; overflow-x: auto; margin-top: 6px; scrollbar-width: none; }
 .pub .chips::-webkit-scrollbar { display: none; }
+/* Geniş ekranda düğmeler alt satıra geçer ("Tümü" kaydırılıp gizlenmesin); telefonda yana kaydırılır */
+@media (min-width: 600px) { .pub .chips { flex-wrap: wrap; overflow-x: visible; } }
 .pub .chip {
   flex: 0 0 auto; padding: 4px 10px; border: 1.5px solid var(--c, var(--accent)); background: #fff;
   color: var(--c, var(--accent)); border-radius: 999px; font-size: 0.8rem; font-weight: 600; cursor: pointer;
 }
+.pub .chip .chip-n { font-size: 0.78em; font-weight: 500; opacity: 0.7; margin-left: 4px; }
 .pub .chip.active { background: var(--c, var(--accent)); color: #fff; }
 .pub .seg { flex: 0 0 auto; display: flex; border: 1.5px solid var(--accent); border-radius: 8px; overflow: hidden; }
 .pub .seg button { border: 0; background: #fff; color: var(--accent); font-weight: 700; font-size: 0.78rem; padding: 5px 9px; cursor: pointer; }

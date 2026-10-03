@@ -75,6 +75,8 @@ Rol ayrımı yoktur: giriş yapan herkes her şeyi düzenleyebilir.
 - **Çevrimdışı yedek:** sunucuya ulaşılamazsa cihazda kayıtlı son veri gösterilir (uyarı bandıyla).
 - Sayfa `noindex` içerir (arama motorlarında görünmez).
 - Kategori (Sebze/Meyve/Kasap/Şarküteri) grup adından belirlenir: "Kasap - ..." → Kasap, adında "meyve" geçen → Meyve, vb.
+- **Diğer** düğmesi, grup adı bu kategorilere uymayan ürün varsa çıkar (ör. "Adetli Ürünler" grubu).
+- **Adetli** düğmesi tüm kategorilerden kilo ile değil adet / paket ile satılanları gösterir: adında `KG` geçmeyen ürünler (`AD`, `ADET`, `PKT`, `400 GR` …). Döküman yazdırma penceresindeki "Adetli / paketli" seçeneğiyle aynı kuraldır.
 
 ## Güncelleme (v3.1 → v3.2)
 

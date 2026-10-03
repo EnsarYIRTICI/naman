@@ -1,12 +1,17 @@
 "use client";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { splitCode } from "@/lib/codes";
-import { CATEGORIES, getCategory, normalize, splitMatch, type Cat } from "@/lib/text";
+import { CATEGORIES, getCategory, getUnit, normalize, splitMatch, type Cat } from "@/lib/text";
 import type { PublicData } from "@/lib/types";
 import { APP_VERSION } from "@/lib/version";
 import Barcode from "./Barcode";
 
 const CACHE_KEY = "naman:data";
+
+/** Kategori düğmeleri + "Adetli" (adında KG geçmeyen, tüm kategorilerden) */
+type Filter = "tumu" | Cat | "adet";
+const passes = (f: Filter, p: { name: string; group: string }) =>
+  f === "tumu" ? true : f === "adet" ? getUnit(p.name) === "adet" : getCategory(p.group) === f;
 
 function Hl({ text, q }: { text: string; q: string }) {
   const m = splitMatch(text, q);
@@ -57,7 +62,7 @@ export default function PublicApp() {
   const [error, setError] = useState("");
   const [offline, setOffline] = useState(false);
   const [raw, setRaw] = useState("");
-  const [cat, setCat] = useState<"tumu" | Cat>("tumu");
+  const [cat, setCat] = useState<Filter>("tumu");
   const [tab, setTab] = useState<"urunler" | "barkodlar">("urunler");
   const [modal, setModal] = useState<{ name: string; code: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -97,7 +102,7 @@ export default function PublicApp() {
   const filtered = useMemo(() => {
     if (!data) return [];
     const list = data.products.filter((p) => {
-      if (cat !== "tumu" && getCategory(p.group) !== cat) return false;
+      if (!passes(cat, p)) return false;
       if (!searching) return true;
       if (isDigits) return p.code.includes(trimmed) || splitCode(p.code).typed === trimmed;
       return matchesName(p.name, toks);
@@ -135,6 +140,16 @@ export default function PublicApp() {
     return data.barcodes.filter((b) => (isDigits ? b.code.includes(trimmed) : matchesName(b.name, toks)));
   }, [data, searching, isDigits, trimmed, toks]);
 
+  // Düğmeler: sabit kategoriler; "Diğer" yalnız veride grubu tanınmayan ürün varsa; en sonda "Adetli"
+  const chips = useMemo(() => {
+    const list: { key: Filter; label: string; n: number }[] = CATEGORIES.map((c) => ({ key: c.key, label: c.label, n: 0 }));
+    const hasDiger = !!data?.products.some((p) => getCategory(p.group) === "diger");
+    if (hasDiger) list.push({ key: "diger", label: "📦 Diğer", n: 0 });
+    list.push({ key: "adet", label: "🔢 Adetli", n: 0 });
+    if (data) for (const c of list) c.n = data.products.filter((p) => passes(c.key, p)).length;
+    return list;
+  }, [data]);
+
   const clear = () => { setRaw(""); inputRef.current?.focus(); };
   const count = tab === "urunler" ? filtered.length + extra.length : barcodes.length;
 
@@ -161,9 +176,10 @@ export default function PublicApp() {
           {raw && <button type="button" className="clear" onClick={clear} aria-label="Aramayı temizle">✕</button>}
         </div>
         <div className="chips">
-          {CATEGORIES.map((c) => (
-            <button key={c.key} type="button" data-cat={c.key} className={"chip" + (cat === c.key ? " active" : "")} onClick={() => setCat(c.key)}>
-              {c.label}
+          {chips.map((c) => (
+            <button key={c.key} type="button" data-cat={c.key} className={"chip" + (cat === c.key ? " active" : "")} onClick={() => setCat(c.key)}
+              title={c.key === "adet" ? "Kilo ile değil adet / paket ile satılanlar (adında KG geçmeyen)" : undefined}>
+              {c.label}{data && c.key !== "tumu" && <small className="chip-n">{c.n}</small>}
             </button>
           ))}
         </div>
