@@ -281,18 +281,23 @@ body {
 .doc .pchip.unit { --c: #37474f; }
 .doc .pdlg-count { font-size: 0.84rem; color: #555; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .doc .plink { border: 0; background: none; padding: 0; font: inherit; color: #1565c0; text-decoration: underline; cursor: pointer; }
-/* Önizleme: gerçek sayfalar küçültülmüş (zoom yerleşimi de küçültür, kaydırma alanı doğru olur) */
+/* Önizleme: gerçek boyutta sayfalar küçültülmüş gösterilir */
 .doc .ppreview { background: #eceff1; border: 1px solid #cfd8dc; border-radius: 10px; padding: 10px; max-height: 40vh; overflow: auto; }
-.doc .ppreview .pc { zoom: 0.55; }
-.doc .ppreview.portrait .pc { zoom: 0.62; }
-.doc .ppreview .pc-page { margin: 0 auto 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+/* zoom değil transform: zoom'da yazı farklı ölçülüp satırlar kayıyordu; transform düzeni değiştirmez */
+.doc .ppreview { --ps: 0.55; }
+.doc .ppreview.portrait { --ps: 0.62; }
+.doc .ppreview .pc-thumb {
+  width: calc(var(--pw) * var(--ps)); height: calc(var(--ph) * var(--ps)); overflow: hidden;
+  margin: 0 auto 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.25); background: #fff;
+}
+.doc .ppreview .pc-thumb > .pc-page { transform: scale(var(--ps)); transform-origin: 0 0; }
 .doc .pdlg-actions { display: flex; gap: 8px; justify-content: flex-end; }
 .doc .dbtn .dtag { margin-left: 2px; }
 .doc .dbtn:disabled { opacity: 0.5; cursor: default; }
 @media (max-width: 640px) {
   .doc .pdlg-opts { grid-template-columns: 1fr; }
   .doc .pseg button { padding: 8px 10px; }
-  .doc .ppreview .pc, .doc .ppreview.portrait .pc { zoom: 0.3; }
+  .doc .ppreview, .doc .ppreview.portrait { --ps: 0.3; }
 }
 
 /* ───────── Basılı sayfa (.pc) — v1 PDF tarzı ─────────
@@ -344,7 +349,8 @@ body {
 /* Ölçüm alanı: ekranda görünmez, sayfa ile aynı genişlik kuralları */
 .pm-wrap { position: fixed; left: -20000px; top: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
 .pm .pc-page { break-after: auto; }
-.pm-col { width: calc((var(--pw) - 2 * var(--pm) - (var(--n) - 1) * var(--cg)) / var(--n)); }
+/* Ölçüm sütunu gerçeğinden 3px dar: sınırdaki ad ölçümde erken kayar, baskıda kaysa da kaymasa da taşmaz */
+.pm-col { width: calc((var(--pw) - 2 * var(--pm) - (var(--n) - 1) * var(--cg)) / var(--n) - 3px); }
 .pm-sample .pc-col { height: 100%; }
 .dprint-wrap { position: fixed; left: -20000px; top: 0; width: 0; height: 0; overflow: hidden; visibility: hidden; pointer-events: none; }
 

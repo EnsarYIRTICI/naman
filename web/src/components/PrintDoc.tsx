@@ -102,7 +102,7 @@ export function PrintMeasure({ snap, settings, onPlan }: {
         ref: i,
       })),
     }));
-    const pages = paginate(flow, { cols: STYLES[settings.style].cols, colH: colH - 1, headH, gap, infoH });
+    const pages = paginate(flow, { cols: STYLES[settings.style].cols, colH: colH - SAFETY_PX, headH, gap, infoH });
     cb.current({ pages, sections });
   }, [sections, settings]);
 
@@ -138,14 +138,23 @@ function PageHead({ title, sub }: { title: string; sub: string }) {
   );
 }
 
+/**
+ * Güvenlik payı (px): tarayıcının yazdırma motoru yazıyı ekrandan çok az farklı ölçebilir; sütun dibinde
+ * bu kadar boşluk bırakılır, ölçüm de sütundan biraz dar yapılır (bkz. .pm-col) ki taşma olmasın.
+ */
+const SAFETY_PX = 6;
+
 /** Kurulmuş sayfaları çizer (yazdırma alanı ve önizleme için aynı bileşen). */
-export function PrintPages({ plan, snap, settings, subtitle }: {
+export function PrintPages({ plan, snap, settings, subtitle, thumb = false }: {
   plan: PrintPlan; snap: DocSnapshot; settings: PrintSettings; subtitle: string;
+  /** Önizleme: her sayfa gerçek boyutta dizilir, sonra transform ile küçültülür (zoom yazıyı farklı kaydırır) */
+  thumb?: boolean;
 }) {
   const total = plan.pages.length;
   return (
     <div className="pc" style={pageVars(settings)}>
-      {plan.pages.map((pg, pi) => (
+      {plan.pages.map((pg, pi) => {
+        const page = (
         <div className="pc-page" key={pi}>
           <PageHead title="KASA ÜRÜN KODLARI LİSTESİ" sub={subtitle} />
           <div className="pc-body">
@@ -172,7 +181,9 @@ export function PrintPages({ plan, snap, settings, subtitle }: {
           </div>
           <div className="pc-foot">Sayfa {pi + 1} / {total}</div>
         </div>
-      ))}
+        );
+        return thumb ? <div className="pc-thumb" key={pi}>{page}</div> : page;
+      })}
     </div>
   );
 }
@@ -279,7 +290,7 @@ export function PrintDialog({ settings, onChange, plan, snap, subtitle, onPrint,
           {shown === 0 ? <>Hiç ürün seçili değil; en az bir kategori ve birim işaretleyin.</> : plan ? <>Bu ayarla <b>{plan.pages.length} sayfa</b> · {st.orient === "landscape" ? "yatay" : "dikey"} A4 · yazı {fmtPt(st.font[settings.size])} pt</> : "Hazırlanıyor…"}
         </div>
         <div className={"ppreview " + st.orient} aria-label="Önizleme">
-          {plan && <PrintPages plan={plan} snap={snap} settings={settings} subtitle={subtitle} />}
+          {plan && <PrintPages plan={plan} snap={snap} settings={settings} subtitle={subtitle} thumb />}
         </div>
 
         <p className="pdlg-note small">
