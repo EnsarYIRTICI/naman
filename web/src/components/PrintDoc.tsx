@@ -3,10 +3,10 @@ import { useLayoutEffect, useMemo, useRef } from "react";
 import { splitCode } from "@/lib/codes";
 import { buildSections } from "@/lib/docsections";
 import {
-  SIZE_LABEL, STYLES, fmtPt, paginate, stripName,
+  CAT_LABEL, SIZE_LABEL, STYLES, UNIT_LABEL, fmtPt, keepProduct, paginate, stripName,
   type FlowSection, type Page, type PrintSettings, type PrintSize, type PrintStyle,
 } from "@/lib/printfit";
-import type { Cat } from "@/lib/text";
+import { getCategory, getUnit, type Cat, type Unit } from "@/lib/text";
 import type { DocSnapshot } from "@/lib/types";
 
 /** Yazdırılacak bölüm: başlık + sırayla alt başlıklar ve ürün satırları */
@@ -14,8 +14,9 @@ interface Entry { kind: "row" | "sub"; text: string; code?: string }
 interface PSection { title: string; cat: Cat; count: number; entries: Entry[] }
 export interface PrintPlan { pages: Page[]; sections: PSection[] }
 
-function toSections(snap: DocSnapshot, strip: boolean): PSection[] {
-  return buildSections(snap.products).map((s) => ({
+function toSections(snap: DocSnapshot, s: PrintSettings): PSection[] {
+  const strip = s.stripPrefix;
+  return buildSections(snap.products.filter((p) => keepProduct(p, s))).map((s) => ({
     title: s.title,
     cat: s.cat,
     count: s.count,
@@ -81,7 +82,7 @@ function Row({ e, z }: { e: Entry; z: boolean }) {
 export function PrintMeasure({ snap, settings, onPlan }: {
   snap: DocSnapshot; settings: PrintSettings; onPlan: (p: PrintPlan) => void;
 }) {
-  const sections = useMemo(() => toSections(snap, settings.stripPrefix), [snap, settings.stripPrefix]);
+  const sections = useMemo(() => toSections(snap, settings), [snap, settings]);
   const ref = useRef<HTMLDivElement>(null);
   const cb = useRef(onPlan);
   cb.current = onPlan;
@@ -188,6 +189,22 @@ export function PrintDialog({ settings, onChange, plan, snap, subtitle, onPrint,
 }) {
   const set = (p: Partial<PrintSettings>) => onChange({ ...settings, ...p });
   const st = STYLES[settings.style];
+
+  // İçerik filtresi: yalnız bu listede bulunan kategori/birimler gösterilir, yanında ürün sayısı
+  const counts = useMemo(() => {
+    const cat = new Map<Cat, number>();
+    const unit = new Map<Unit, number>();
+    for (const p of snap.products) {
+      const c = getCategory(p.group), u = getUnit(p.name);
+      cat.set(c, (cat.get(c) ?? 0) + 1);
+      unit.set(u, (unit.get(u) ?? 0) + 1);
+    }
+    return { cat, unit };
+  }, [snap]);
+  const shown = useMemo(() => snap.products.filter((p) => keepProduct(p, settings)).length, [snap, settings]);
+  const toggle = <T,>(list: T[], v: T) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
+  const catKeys = (Object.keys(CAT_LABEL) as Cat[]).filter((c) => counts.cat.has(c));
+  const unitKeys = (Object.keys(UNIT_LABEL) as Unit[]).filter((u) => counts.unit.has(u));
   return (
     <div className="dmodal no-print" onClick={(e) => e.target === e.currentTarget && onClose()} role="dialog" aria-label="Yazdırma düzeni">
       <div className="dmodal-box pdlg">
@@ -221,13 +238,45 @@ export function PrintDialog({ settings, onChange, plan, snap, subtitle, onPrint,
           ))}
         </div>
 
+        <div className="pdlg-label">İçerik <small>(işareti kaldırılan dökümana girmez)</small></div>
+        <div className="pchips" role="group" aria-label="Kategoriler">
+          {catKeys.map((c) => {
+            const on = !settings.hideCats.includes(c);
+            return (
+              <label key={c} className={"pchip" + (on ? " on" : "")} data-cat={c} data-testid={`cat-${c}`}>
+                <input type="checkbox" checked={on} onChange={() => set({ hideCats: toggle(settings.hideCats, c) })} />
+                {CAT_LABEL[c]} <small>{counts.cat.get(c)}</small>
+              </label>
+            );
+          })}
+        </div>
+        {unitKeys.length > 1 && (
+          <div className="pchips" role="group" aria-label="Satış birimi">
+            {unitKeys.map((u) => {
+              const on = !settings.hideUnits.includes(u);
+              return (
+                <label key={u} className={"pchip unit" + (on ? " on" : "")} data-testid={`unit-${u}`}>
+                  <input type="checkbox" checked={on} onChange={() => set({ hideUnits: toggle(settings.hideUnits, u) })} />
+                  {UNIT_LABEL[u]} <small>{counts.unit.get(u)}</small>
+                </label>
+              );
+            })}
+          </div>
+        )}
+        <div className="pdlg-count">
+          <b>{shown}</b> / {snap.products.length} ürün dökümana girecek
+          {(settings.hideCats.length > 0 || settings.hideUnits.length > 0) && (
+            <button type="button" className="plink" onClick={() => set({ hideCats: [], hideUnits: [] })}>Hepsini dahil et</button>
+          )}
+        </div>
+
         <div className="pdlg-row col">
           <label><input type="checkbox" checked={settings.info} onChange={(e) => set({ info: e.target.checked })} /> Yemek kartı, kanal kodları ve &quot;kod nasıl girilir&quot; kutusu</label>
           <label><input type="checkbox" checked={settings.stripPrefix} onChange={(e) => set({ stripPrefix: e.target.checked })} /> Ürün adlarının başındaki &quot;MNV.&quot; / &quot;MN.&quot; yazılmasın</label>
         </div>
 
         <div className="pdlg-sum" data-testid="print-summary">
-          {plan ? <>Bu ayarla <b>{plan.pages.length} sayfa</b> · {st.orient === "landscape" ? "yatay" : "dikey"} A4 · yazı {fmtPt(st.font[settings.size])} pt</> : "Hazırlanıyor…"}
+          {shown === 0 ? <>Hiç ürün seçili değil; en az bir kategori ve birim işaretleyin.</> : plan ? <>Bu ayarla <b>{plan.pages.length} sayfa</b> · {st.orient === "landscape" ? "yatay" : "dikey"} A4 · yazı {fmtPt(st.font[settings.size])} pt</> : "Hazırlanıyor…"}
         </div>
         <div className={"ppreview " + st.orient} aria-label="Önizleme">
           {plan && <PrintPages plan={plan} snap={snap} settings={settings} subtitle={subtitle} />}
@@ -237,7 +286,7 @@ export function PrintDialog({ settings, onChange, plan, snap, subtitle, onPrint,
           Tarayıcının yazdırma ekranında kağıt <b>A4</b>, ölçek <b>Varsayılan / %100</b> olmalı. PDF için hedef olarak &quot;PDF olarak kaydet&quot;i seçin.
         </p>
         <div className="pdlg-actions">
-          <button type="button" className="dbtn dark" onClick={onPrint} disabled={!plan} data-testid="print-go">Yazdır / PDF kaydet</button>
+          <button type="button" className="dbtn dark" onClick={onPrint} disabled={!plan || shown === 0} data-testid="print-go">Yazdır / PDF kaydet</button>
           <button type="button" className="dbtn" onClick={onClose}>Kapat</button>
         </div>
       </div>

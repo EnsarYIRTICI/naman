@@ -35,7 +35,7 @@ describe("paginate", () => {
 
 describe("loadSettings / stripName", () => {
   it("bozuk ya da eski (sayfa sayılı) ayarda varsayılana döner", () => {
-    expect(loadSettings("{bozuk")).toEqual({ style: "land2", size: "m", info: true, stripPrefix: false });
+    expect(loadSettings("{bozuk")).toEqual({ style: "land2", size: "m", info: true, stripPrefix: false, hideCats: [], hideUnits: [] });
     expect(loadSettings(JSON.stringify({ mode: "fit", pages: 3, style: "x" }))).toMatchObject({ style: "land2", size: "m" });
     expect(loadSettings(JSON.stringify({ style: "land3", size: "l" }))).toMatchObject({ style: "land3", size: "l" });
   });
@@ -43,5 +43,32 @@ describe("loadSettings / stripName", () => {
     expect(stripName("MNV.BIBER KG")).toBe("BIBER KG");
     expect(stripName("MN. PATLICAN MOR KG")).toBe("PATLICAN MOR KG");
     expect(stripName("SEN PILIC BAGET KG")).toBe("SEN PILIC BAGET KG");
+  });
+});
+
+import { filterNote, keepProduct } from "./printfit";
+import { getUnit } from "./text";
+
+describe("içerik filtresi", () => {
+  it("birimi addan çıkarır", () => {
+    expect(getUnit("MNV.BARBUNYA KG")).toBe("kg");
+    expect(getUnit("MNV.AHUDUDU AD")).toBe("adet");
+    expect(getUnit("MNV.FRENK SOGAN ADET")).toBe("adet");
+    expect(getUnit("MNV.CAGLA PAKET")).toBe("adet");
+    expect(getUnit("MASK TARIM DOGRANMIS KULTUR MANTARI 350 GR")).toBe("adet");
+    expect(getUnit("MNV.BIBER CARLISTON PAKET KG")).toBe("kg");
+  });
+  it("kategori ve birime göre eler", () => {
+    const s = { hideCats: ["kasap" as const], hideUnits: ["adet" as const] };
+    expect(keepProduct({ name: "MNV.ELMA KG", group: "Egzotik Meyveler" }, s)).toBe(true);
+    expect(keepProduct({ name: "PILIC BUT KG", group: "Kasap - Banvit" }, s)).toBe(false);
+    expect(keepProduct({ name: "MNV.AHUDUDU AD", group: "Egzotik Meyveler" }, s)).toBe(false);
+    expect(filterNote(s)).toBe("Kasap hariç · adetliler hariç");
+  });
+  it("bozuk kayıtlı filtreyi temizler", () => {
+    const s = loadSettings(JSON.stringify({ hideCats: ["meyve", "yok", "meyve"], hideUnits: "x" }));
+    expect(s.hideCats).toEqual(["meyve"]);
+    expect(s.hideUnits).toEqual([]);
+    expect(loadSettings(null).hideCats).toEqual([]);
   });
 });

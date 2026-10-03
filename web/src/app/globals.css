@@ -266,6 +266,21 @@ body {
 .doc .pdlg-row.col { flex-direction: column; gap: 6px; }
 .doc .pdlg-row input { margin-right: 4px; }
 .doc .pdlg-sum { font-size: 0.9rem; margin: 10px 0 6px; }
+/* İçerik filtresi: kategori / birim çipleri (işaretli = dökümana girer) */
+.doc .pdlg-label small { text-transform: none; letter-spacing: 0; font-weight: 400; color: #888; }
+.doc .pchips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.doc .pchip {
+  --c: #455a64;
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none;
+  border: 1.5px solid #cfd8dc; border-radius: 999px; padding: 5px 12px 5px 9px; font-size: 0.86rem; font-weight: 600;
+  background: #fff; color: #90a4ae; text-decoration: line-through; text-decoration-color: #b0bec5;
+}
+.doc .pchip input { margin: 0; accent-color: var(--c); }
+.doc .pchip small { font-weight: 400; font-size: 0.75rem; color: inherit; opacity: 0.8; }
+.doc .pchip.on { border-color: var(--c); color: var(--c); background: var(--c-soft, #f3f5f6); text-decoration: none; }
+.doc .pchip.unit { --c: #37474f; }
+.doc .pdlg-count { font-size: 0.84rem; color: #555; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.doc .plink { border: 0; background: none; padding: 0; font: inherit; color: #1565c0; text-decoration: underline; cursor: pointer; }
 /* Önizleme: gerçek sayfalar küçültülmüş (zoom yerleşimi de küçültür, kaydırma alanı doğru olur) */
 .doc .ppreview { background: #eceff1; border: 1px solid #cfd8dc; border-radius: 10px; padding: 10px; max-height: 40vh; overflow: auto; }
 .doc .ppreview .pc { zoom: 0.55; }

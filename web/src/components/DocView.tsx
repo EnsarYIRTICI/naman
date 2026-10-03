@@ -3,7 +3,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { splitCode } from "@/lib/codes";
 import { buildSections } from "@/lib/docsections";
-import { DEFAULT_SETTINGS, STYLES, loadSettings, type PrintSettings } from "@/lib/printfit";
+import { DEFAULT_SETTINGS, STYLES, filterNote, loadSettings, type PrintSettings } from "@/lib/printfit";
 import type { DocPublic, DocSnapshot } from "@/lib/types";
 import { PrintDialog, PrintMeasure, PrintPages, type PrintPlan } from "./PrintDoc";
 
@@ -157,7 +157,10 @@ export default function DocView() {
   const base = typeof window !== "undefined" ? location.pathname : "/dokuman";
   const hrefFor = (label: string | null) => (label ? `${base}?v=${encodeURIComponent(label)}` : base);
 
-  const printSub = sel ? (live ? `Güncel liste · ${fmtDate(sel.publishedAt)}` : `Sürüm ${sel.label} · ${fmtDate(sel.publishedAt)}`) : "";
+  const printBase = sel ? (live ? `Güncel liste · ${fmtDate(sel.publishedAt)}` : `Sürüm ${sel.label} · ${fmtDate(sel.publishedAt)}`) : "";
+  // Filtreli baskıda kağıt üzerinde neyin eksik olduğu belli olsun
+  const fNote = filterNote(ps);
+  const printSub = printBase && fNote ? `${printBase} · ${fNote}` : printBase;
 
   return (
     <>

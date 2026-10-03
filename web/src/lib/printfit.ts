@@ -6,6 +6,8 @@
  * alt başlık sütun dibinde yalnız kalmaz, her sayfada başlık ve sayfa numarası olur.
  */
 
+import { getCategory, getUnit, type Cat, type Unit } from "./text";
+
 export type PrintStyle = "land2" | "port2" | "land3";
 export type PrintSize = "s" | "m" | "l";
 
@@ -14,8 +16,35 @@ export interface PrintSettings {
   size: PrintSize;
   info: boolean; // yemek kartı / kanal / "kod nasıl girilir" kutusu (ilk sütunda)
   stripPrefix: boolean; // ad başındaki "MNV." / "MN." önekini yazdırma
+  /** Dökümana alınmayacak kategoriler (Sebze, Meyve, Kasap, Şarküteri, Diğer) */
+  hideCats: Cat[];
+  /** Dökümana alınmayacak satış birimleri (kg'lık / adetli) */
+  hideUnits: Unit[];
 }
-export const DEFAULT_SETTINGS: PrintSettings = { style: "land2", size: "m", info: true, stripPrefix: false };
+export const DEFAULT_SETTINGS: PrintSettings = {
+  style: "land2", size: "m", info: true, stripPrefix: false, hideCats: [], hideUnits: [],
+};
+
+export const CAT_LABEL: Record<Cat, string> = {
+  sebze: "Sebze", meyve: "Meyve", kasap: "Kasap", sarkuteri: "Şarküteri", diger: "Diğer",
+};
+export const UNIT_LABEL: Record<Unit, string> = { kg: "Kilogramlık (KG)", adet: "Adetli / paketli" };
+
+/** Yazdırma ayarındaki içerik filtresi (kategori + birim) bu ürünü dökümana alıyor mu */
+export function keepProduct(p: { name: string; group: string }, s: Pick<PrintSettings, "hideCats" | "hideUnits">): boolean {
+  if (s.hideCats.length && s.hideCats.includes(getCategory(p.group))) return false;
+  if (s.hideUnits.length && s.hideUnits.includes(getUnit(p.name))) return false;
+  return true;
+}
+
+/** Filtre açıksa sayfa başlığına eklenecek kısa not: "Kasap, Şarküteri hariç · adetliler hariç" */
+export function filterNote(s: Pick<PrintSettings, "hideCats" | "hideUnits">): string {
+  const parts: string[] = [];
+  if (s.hideCats.length) parts.push(s.hideCats.map((c) => CAT_LABEL[c]).join(", ") + " hariç");
+  if (s.hideUnits.includes("adet")) parts.push("adetliler hariç");
+  if (s.hideUnits.includes("kg")) parts.push("KG'lıklar hariç");
+  return parts.join(" · ");
+}
 
 export interface StyleCfg {
   label: string;
@@ -121,7 +150,12 @@ export function loadSettings(raw: string | null): PrintSettings {
     if (!(out.size in SIZE_LABEL)) out.size = DEFAULT_SETTINGS.size;
     out.info = out.info !== false;
     out.stripPrefix = out.stripPrefix === true;
-    return { style: out.style, size: out.size, info: out.info, stripPrefix: out.stripPrefix };
+    const hideCats = Array.isArray(out.hideCats) ? out.hideCats.filter((c): c is Cat => c in CAT_LABEL) : [];
+    const hideUnits = Array.isArray(out.hideUnits) ? out.hideUnits.filter((u): u is Unit => u in UNIT_LABEL) : [];
+    return {
+      style: out.style, size: out.size, info: out.info, stripPrefix: out.stripPrefix,
+      hideCats: [...new Set(hideCats)], hideUnits: [...new Set(hideUnits)],
+    };
   } catch {
     return { ...DEFAULT_SETTINGS };
   }

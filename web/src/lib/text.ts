@@ -26,6 +26,16 @@ export function getCategory(group: string): Cat {
   return "diger";
 }
 
+export type Unit = "kg" | "adet";
+
+/**
+ * Ürün adından satış birimi: adında "KG" / "KILO" geçen kilogramla satılır; geri kalanlar
+ * (AD, ADET, PAKET, DEMET, "350 GR" gibi paketli) adetli sayılır.
+ */
+export function getUnit(name: string): Unit {
+  return /(^|[^A-Z])(KG|KILO|KILOGRAM)([^A-Z]|$)/.test(normalize(name || "")) ? "kg" : "adet";
+}
+
 /** Arama eşleşmesini [önce, eşleşen, sonra] olarak böler; eşleşme yoksa null. */
 export function splitMatch(text: string, q: string): [string, string, string] | null {
   if (!q) return null;
